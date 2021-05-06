@@ -1,5 +1,6 @@
 from infi.systray import SysTrayIcon
 
+from ._config import folder_img
 
 class ModeTray():
     def __init__(self, w, t1):
@@ -12,17 +13,15 @@ class ModeTray():
         #Count porque no se porque putas se produce el evento varias veces
         self.count = 0
 
-        item_playpause = ("Play / Pause", None, lambda systray: self.controls.playpause())
-        item_playnext = ("Play Next", None, lambda systray: self.controls.playNext())
-        item_playprevious = ("Play Previuous", None, lambda systray: self.controls.playPrevious())
-        item_separator1 = ("__________________", None, lambda systray: None)
-        item_random = ("Set/Quit Random", None, lambda systray: self.controls.setRandom())
-        item_bucle = ("Set/Quit Bucle", None, lambda systray: self.controls.setBucle())
-        item_separator2 = ("__________________", None, lambda systray: None)
+        item_playpause = ("Play / Pause", folder_img+r"\playpause.ico", lambda systray: self.controls.playpause())
+        item_playnext = ("Play Next", folder_img+r"\playder.ico", lambda systray: self.controls.playNext())
+        item_playprevious = ("Play Previuous", folder_img+r"\playizq.ico", lambda systray: self.controls.playPrevious())
+        item_random = ("Set / Quit Random", folder_img+r"\Aleatorio.ico", lambda systray: self.controls.setRandom())
+        item_bucle = ("Set / Quit Bucle", folder_img+r"\Bucle.ico", lambda systray: self.controls.setBucle())
         item_open = ("Open", None, self.openW)
         
-        menu_options = (item_playpause, item_playnext, item_playprevious, item_separator1, item_random, item_bucle, item_separator2, item_open)
-        self.systray = SysTrayIcon(None, "Reproc", menu_options, default_menu_index=7, on_quit=self.exitW)
+        menu_options = (item_playpause, item_playnext, item_playprevious, item_random, item_bucle, item_open)
+        self.systray = SysTrayIcon(folder_img+r"\icon.ico", "Reproc", menu_options, default_menu_index=5, on_quit=self.exitW)
 
 #_____________________________________________________________________________________________________________________
 
