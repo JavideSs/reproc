@@ -1,4 +1,4 @@
-from mutagen.mp3 import MP3
+from tinytag import TinyTag
 from pygame import mixer
 
 from random import choice
@@ -6,17 +6,19 @@ from operator import attrgetter
 import struct
 import os
 
-from _config import folder_music
+from ._config import folder_music
 
 
 class Song():
-    def __init__(self, id, name, path, secons, time, date):
+    def __init__(self, id, name, path, secons, time, date, frequency, art_data):
         self.id = id
         self.name = name
         self.path = path
         self.secons = secons
         self.time = time
         self.date = date
+        self.frequency = frequency
+        self.art_data = art_data
 
 #______________________________________________________________________________________________________
 #______________________________________________________________________________________________________
@@ -36,7 +38,7 @@ class Main():
         self.state_random = False
         self.state_bucle = False
 
-        mixer.init(48000) #Frecuencia mp3 con 320kbps
+        mixer.init(frequency=48000, channels=2) ##Frecuencia mp3 con 320kbps por default, stereo
 
 #______________________________________________________________________________________________________
 
@@ -58,9 +60,12 @@ class Main():
                 if file.is_file() and file.name.endswith(".mp3"):
                     name_playable = ''.join(c if c <= '\uffff' else ''.join(chr(x) for x in struct.unpack('>2H', c.encode('utf-16be'))) for c in file.name[:-4])
                     path = folder_music+"/"+file.name
-                    s_total = round(MP3(path).info.length)
+                    song_properties = TinyTag.get(path, image=True)
+                    s_total = round(song_properties.duration)
+                    frequency = song_properties.samplerate
+                    art_data = song_properties.get_image()
 
-                    song = Song(id, name_playable, path, s_total, Main.formatoTime(s_total), os.stat(path).st_ctime)
+                    song = Song(id, name_playable, path, s_total, Main.formatoTime(s_total), os.stat(path).st_ctime, frequency, art_data)
                     self._songs_all.append(song)
                     id += 1
 
@@ -81,6 +86,9 @@ class Main():
     def playById(self, song_id):
         for song in self._songs_playlist:
             if song_id == song.id:
+                if mixer.get_init()[0] != song.frequency:
+                    mixer.quit()
+                    mixer.init(frequency=song.frequency, channels=2)
                 mixer.music.load(song.path)
                 mixer.music.play()
                 #Evitamos list index out of range y si la anterior no es la misma cancion...

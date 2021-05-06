@@ -1,15 +1,15 @@
 from tkinter.ttk import Label
 from PIL import Image, ImageTk
 
-from _config import color_reproc
+from ._config import color_reproc
 
 
-class CDgif(Label):
-    def __init__(self, w, filename):
+class CDgif():
+    def __init__(self, canvas, filename):
+        self.canvas = canvas
 
         img = Image.open(filename)
         gif =  []
-
         try:
             while True:
                 gif.append(img.copy())
@@ -20,7 +20,7 @@ class CDgif(Label):
         self.delay = img.info['duration']
 
         self.frames = [ImageTk.PhotoImage(gif[0])]
-        Label.__init__(self, w, image=self.frames, background=color_reproc, padd=5)
+        self.img_cd_i = self.canvas.create_image(-4,2, image=self.frames, anchor="nw")
 
         lut = [1] * 256
         lut[img.info["transparency"]] = 0
@@ -35,8 +35,8 @@ class CDgif(Label):
         self.idx = 0
 
     def play(self):
-        self.config(image=self.frames[self.idx])
+        self.canvas.itemconfig(self.img_cd_i, image=self.frames[self.idx])
         self.idx += 1
         if self.idx == len(self.frames):
             self.idx = 0
-        self.cancel = self.after(self.delay, self.play)
+        self.cancel = self.canvas.after(self.delay, self.play)
