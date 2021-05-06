@@ -1,18 +1,3 @@
-__author__='''
-                    Created by:
-        __                                  __
-        /               ,       /         /    )
-       /    __              __ /    __   (__      __
-      /    /   ) | /  /   /   /   /___)     |    (_ `
- (___/    (___(  |/  /   (___/   (___  (____/   (__)
-______________________________________________________
-                __Alicante project__
-'''
-print(__author__)
-
-#________________________________________________________
-
-
 from tkinter import *
 from tkinter import ttk
 from ttkthemes import ThemedTk
@@ -21,56 +6,17 @@ from PIL import Image, ImageTk, ImageSequence
 from urllib import parse, request
 
 import youtube_dl
-import wave
-import simpleaudio
+from pyglet import media
+import pyglet
 
 import threading
 import subprocess
 import random
+import gc
 import os
 import re
 
-class CDimg(Label):
-    def __init__(self, w, filename):
-        img = Image.open(filename)
-        seq =  []
-
-        try:
-            while True:
-                seq.append(img.copy())
-                img.seek(len(seq)) # skip to next frame
-        except EOFError:
-            pass
-
-        try:
-            self.delay = img.info['duration']
-        except KeyError:
-            self.delay = 100
-
-        first = seq[0].convert('RGBA')
-        self.frames = [ImageTk.PhotoImage(first)]
-
-        Label.__init__(self, w, image=self.frames[0])
-
-        lut = [1] * 256
-        lut[img.info["transparency"]] = 0
-
-        temp = seq[0]
-        for image in seq[1:]:
-            mask = image.point(lut, "1")
-            temp.paste(image, None, mask)
-            frame = temp.convert('RGBA')
-            self.frames.append(ImageTk.PhotoImage(frame))
-
-        self.idx = 0
-        self.cancel = self.after(100, self.play)
-
-    def play(self):
-        self.config(image=self.frames[self.idx])
-        self.idx += 1
-        if self.idx == len(self.frames):
-            self.idx = 0
-        self.cancel = self.after(self.delay, self.play)
+from img.gif import CDimg
 
 
 class App:
@@ -82,37 +28,33 @@ class App:
 
         self.w = w
         w.title('Reproc')
-        w.geometry("600x435")
+        w.geometry("570x435")
         w.resizable(0,0)
+
 
         #Estilos
         style = ttk.Style(w)
-
         style.configure('Treeview', rowheight=25)
         style.configure("Treeview.Heading", foreground="#004788")
         style.layout('nodotbox.Treeview.Item',[('Treeitem.padding',{'children':[('Treeitem.text',{'side':'left','sticky':''})]})])
 
+
         #Elementos
         self.lista = ttk.Treeview(w, height=15, padding=5, selectmode="browse", style='nodotbox.Treeview')
-        self.lista.grid(row=0, column=1)
+        self.lista.grid(row=0, column=1, rowspan=2)
 
         lista_scroll = ttk.Scrollbar(w, orient='vertical', command=self.lista.yview)
-        lista_scroll.grid(row=0, column=2, sticky='ns')
-
-
+        lista_scroll.grid(row=0, column=2, sticky='ns', rowspan=2)
+        #___________________________________________________________________________________________________________________
         self.frame_music = LabelFrame(w, padx=10, width=30)
-        self.frame_music.grid(row=0, column=0, sticky="nw")
-
-        self.img_cd = CDimg(self.frame_music, self.folder_img+"/CDFinal.gif")
-        self.img_cd.after_cancel(self.img_cd.cancel)
-        self.img_cd.grid(row=0, column=0, rowspan=2, sticky="nw", pady=10)
+        self.frame_music.grid(row=0, column=0, sticky="n")
 
         self.img_izq = PhotoImage(file=self.folder_img+"/Izq.png")
         self.btn_izq = Button(self.frame_music, image=self.img_izq, borderwidth=0)
         self.btn_izq.grid(row=1, column=1,sticky="nw")
 
         self.img_play = PhotoImage(file=self.folder_img+"/Play.png")
-        self.img_pause = PhotoImage(file=self.folder_img+"/Playing.png")
+        self.img_playing = PhotoImage(file=self.folder_img+"/Playing.png")
         self.btn_playpause = Button(self.frame_music, image=self.img_play, borderwidth=0, command=self.play_button)
         self.btn_playpause.grid(row=1, column=2, sticky="nw")
 
@@ -120,11 +62,26 @@ class App:
         self.btn_der = Button(self.frame_music, image=self.img_der, borderwidth=0)
         self.btn_der.grid(row=1, column=3, sticky="nw")
 
-        self.lbl_name = Label(self.frame_music, text="Trevir something - all night", width=20)
+        self.lbl_name = Label(self.frame_music, text="Trevor something - all night", width=20)
         self.lbl_name.grid(row=2, column=0, columnspan=4)
 
         self.linetime = ttk.Scale(self.frame_music, from_=0, to_=100, orient="horizontal", length=200)
         self.linetime.grid(row=3,column=0, columnspan=4, pady=5)
+        #___________________________________________________________________________________________________________________
+        self.frame_download = LabelFrame(w, text="Download Music")
+        self.frame_download.grid(row=1, column =0, sticky="n")
+
+        self.entry_download = ttk.Entry(self.frame_download, text="Link")
+        self.entry_download.grid(row=0, column=0)
+
+        self.btn_download = Button(self.frame_download, text="Dowload")
+        self.btn_download.grid(row=0, column=1)
+
+        self.entry_download = ttk.Entry(self.frame_download, text="Song")
+        self.entry_download.grid(row=1, column=0)
+
+        self.btn_search = Button(self.frame_download, text="Search", command=self.download)
+        self.btn_search.grid(row=1, column=1)
 
 
         #Configuracion elementos
@@ -140,6 +97,7 @@ class App:
 
 
         #Añadir musica
+        self.playlist = []
         try:
             os.mkdir(self.folder_music)
         except:
@@ -148,76 +106,131 @@ class App:
             os.chdir(self.folder_music)
 
         #Variables globales
-        self.song_active = False
-        self.song_play = True
         self.btn_playpause_active = False
+        self.is_off = False
+        self.song_active = False
+        self.song_stop = False
+        self.song_play = False
+        self.song_pause = False
+        self.song_continue = False
+
+        self.hilo_reproductor = threading.Thread(target=self.bucle_reproductor)
+        self.hilo_reproductor.start()
+
+        self.player = media.Player()
+    #____________________________________________________________________________
+
+
+    def download(self):
+        busqueda = self.entry_download.get()
+
+        enlace_convert = parse.urlencode({'search_query': busqueda})
+        enlace_final = request.urlopen('http://www.youtube.com/results?' + enlace_convert)
+        resultados = re.findall('href=\"\\/watch\\?v=(.{11})', enlace_final.read().decode())
+        url = resultados[0]
+
+        ydl_opc = {
+            'format': 'bestaudio/worstvideo',
+            'outtmpl': '/%(title)s.%(ext)s',
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '320',
+            }],
+        }
+
+        with youtube_dl.YoutubeDL(ydl_opc) as ydl:
+            ydl.cache.remove()
+            ydl.download([url])
+
+
+    def bucle_reproductor(self):
+        while not self.is_off:
+
+            self.getMusicAfter()
+
+            if self.song_stop:
+                self.player.stop()
+                self.song_stop = False
+                self.song_active = False
+
+
+            if self.song_play:
+                if self.song_active:
+                    self.play_obj.stop()
+
+                song_name = self.lista.item(self.lista.selection())["text"]
+                source = media.StaticSource(media.load(song_name[9:]))
+                self.player.queue(source)
+                self.player.play()
+                pyglet.app.run()
+
+                self.song_play = False
+                self.song_active = True
+
+                self.btn_playpause_active = True
+                self.btn_playpause.configure(image=self.img_playing)
+                self.btn_playpause.image = self.img_playing
+
+
+            if self.song_pause:
+                self.player.play()
+                self.song_pause = False
+
+                self.btn_playpause_active = False
+                self.btn_playpause.configure(image=self.img_play)
+                self.btn_playpause.image = self.img_play
+
+            if self.song_continue:
+                self.player.resume()
+                self.song_continue = False
+
+                self.btn_playpause_active = True
+                self.btn_playpause.configure(image=self.img_playing)
+                self.btn_playpause.image = self.img_playing
 
 
     def getMusic(self):
+
         with os.scandir(self.folder_music) as it:
             for v in it:
-                if v.is_file():
+                if v.is_file() and v.name.endswith(".wav"):
+                    self.playlist.append(v.name)
                     self.lista.insert("","end",text=" [ > ]   " + v.name)
+
+    def getMusicAfter(self):
+        with os.scandir(self.folder_music) as it:
+            for v in it:
+                if v.is_file() and v.name.endswith(".wav") and not v.name in self.playlist:
+                    self.playlist.append(v.name)
+                    self.playlist.sort()
+                    self.lista.insert("","end",text=" [ > ]   " + v.name)
+
 
     def play_enter(self, event):
         pass
 
+
     def pause_space(self, event):
         pass
 
+
     def play_click(self, event):
         if 12 < event.x < 32:
-
-            if self.song_active:
-                self.play_obj.stop()
-                self.img_cd.after_cancel(self.img_cd.cancel)
-
-            song_name = self.lista.item(self.lista.selection())["text"]
-            self.wave_read = wave.open(song_name[9:],"rb")
-            wave_obj = simpleaudio.WaveObject.from_wave_read(self.wave_read)
-            self.play_obj = wave_obj.play()
-            self.song_active = True
             self.song_play = True
-            self.img_cd.play()
 
-            self.btn_playpause.configure(image=self.img_pause)
-            self.btn_playpause.image = self.img_pause
-            self.btn_playpause_active = True
+        elif 204<event.x<310 and 15<event.y<25:
+            os.system("start. "+self.folder_music)
+
 
     def play_button(self):
-        if not self.btn_playpause_active:
-            self.btn_playpause.configure(image=self.img_pause)
-            self.btn_playpause.image = self.img_pause
-            self.btn_playpause_active = True
-
-            if not self.song_active:
-                if self.lista.selection():
-                    song_name = self.lista.item(self.lista.selection())["text"]
-                    self.wave_read = wave.open(song_name[9:],"rb")
-
-                else:
-                    song_name = random.choice([name for name in os.listdir("./") if (os.path.isfile(name) and name.endswith(".wav"))])
-                    self.wave_read = wave.open(song_name,"rb")
-
-
-                wave_obj = simpleaudio.WaveObject.from_wave_read(self.wave_read)
-                self.play_obj = wave_obj.play()
-                self.song_active = True
-                self.img_cd.play()
-
-            else:
-                self.play_obj.resume()
-                self.song_play = True
-                self.img_cd.play()
-
+        if self.btn_playpause_active:
+            self.song_pause = True
         else:
-            self.btn_playpause.configure(image=self.img_play)
-            self.btn_playpause.image = self.img_play
-            self.btn_playpause_active = False
-
-            self.play_obj.pause()
-            self.song_play = False
-            self.img_cd.after_cancel(self.img_cd.cancel)
+            if self.play_obj.is_playing():
+                self.song_continue = True
+            else:
+                self.song_play = True
 
 
 #________________________________________________________
@@ -227,3 +240,4 @@ if __name__ == "__main__":
     win.set_theme("arc")
     app = App(win)
     win.mainloop()
+    app.is_off = True
