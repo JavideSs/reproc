@@ -6,7 +6,7 @@ from operator import attrgetter
 import struct
 import os
 
-from ._config import folder_music
+from ._config import folder_music, sep
 
 
 class Song():
@@ -57,9 +57,10 @@ class Main():
         with os.scandir(folder_music) as it:
             id = 0
             for file in it:
-                if file.is_file() and file.name.endswith(".mp3"):
+                if file.is_file() and (file.name.endswith(".mp3") or file.name.endswith(".ogg")):
                     name_playable = ''.join(c if c <= '\uffff' else ''.join(chr(x) for x in struct.unpack('>2H', c.encode('utf-16be'))) for c in file.name[:-4])
-                    path = folder_music+"/"+file.name
+                    path = folder_music + sep+file.name
+                    
                     song_properties = TinyTag.get(path, image=True)
                     s_total = round(song_properties.duration)
                     frequency = song_properties.samplerate
@@ -68,6 +69,7 @@ class Main():
                     song = Song(id, name_playable, path, s_total, Main.formatoTime(s_total), os.stat(path).st_ctime, frequency, art_data)
                     self._songs_all.append(song)
                     id += 1
+        self._songs_all.sort(key=attrgetter("name"))
 
     #______________________________________________________
 

@@ -22,7 +22,7 @@ class TabMusic():
         style.configure("MenuDown.TFrame", background=color_reproc2)
         style.configure("TimeBar.Horizontal.TScale", background=color_reproc)
         style.configure("MusicList.Treeview", rowheight=25, background=color_playlist, foreground="gray30", font=font)
-        style.map("MusicList.Treeview", background=[("selected", color_reproc)], foreground=[("selected","dark violet")])
+        style.map("MusicList.Treeview", background=[("selected", "#bed2e2")], foreground=[("selected","dark violet")])
         #Expandir color si no hay suficientes items
         style.layout("MusicList.Treeview",[("Treeview.treearea",{"sticky":"nswe"})])
         #Eliminar rectangulo seleccionador
@@ -39,7 +39,7 @@ class TabMusic():
         self.canvas.create_image(-4,0,image=self.song_art_default, anchor="nw")
         self.img_art = self.canvas.create_image(0,0,image=None, anchor="nw")
         self.canvas.create_image(-4,0,image=self.song_art_fix, anchor="nw")
-        self.img_cd = CDgif(self.canvas, folder_img+r"\_Logo.gif")
+        self.img_cd = CDgif(self.canvas, folder_img + sep+"_Logo.gif")
 
         self.menu_up_play = ttk.Frame(self.menu_up, style="MenuUp.TFrame")
         self.menu_up_play.grid(row=0, column=1)
