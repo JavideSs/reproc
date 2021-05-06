@@ -1,0 +1,27 @@
+{
+    "State": {
+        "volume": 1.0,
+        "random": false,
+        "loop": false,
+        "playlist": "",
+        "language": "en",
+        "theme": "normal"
+    },
+    "Playlists": {},
+    "Themes": {
+        "normal": {
+            "BG": "#f5f6f7",
+            "FG": "black",
+            "BG_WIDGET_GREY": "#d2d4d8",
+            "BG_WIDGET_BLUE": "#5295e2",
+            "BTN_BG_HOVER": "#e6f0fb",
+            "TV_BG": "#f0f0f7",
+            "TV_BG_SELECT": "#DFDFEF",
+            "TV_BG_HOVER": "#E6E6F6",
+            "TV_FG": "gray30",
+            "TV_FG_SELECT": "#5295e2",
+            "TV_FG_HOVER": "gray30",
+            "TV_FG_PLAYING": "#9665AA"
+        }
+    }
+}
