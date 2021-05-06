@@ -1,9 +1,10 @@
 from tkinter.ttk import Label
 from PIL import Image, ImageTk
 
-from config import color_menu_up
+from _config import color_reproc
 
-class CDimg(Label):
+
+class CDgif(Label):
     def __init__(self, w, filename):
 
         img = Image.open(filename)
@@ -19,7 +20,7 @@ class CDimg(Label):
         self.delay = img.info['duration']
 
         self.frames = [ImageTk.PhotoImage(gif[0])]
-        Label.__init__(self, w, image=self.frames, background=color_menu_up, padd=5)
+        Label.__init__(self, w, image=self.frames, background=color_reproc, padd=5)
 
         lut = [1] * 256
         lut[img.info["transparency"]] = 0
