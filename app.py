@@ -1,6 +1,6 @@
-from tkinter import PhotoImage
 from tkinter.ttk import Notebook, Frame, Style
 from ttkthemes import ThemedTk
+from tkinter import PhotoImage
 
 from tabMusic import TabMusic
 from config import *

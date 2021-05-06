@@ -1,46 +1,66 @@
-import os
 from mutagen.mp3 import MP3
 from pygame.mixer import init, music
 from threading import Thread, Timer
+from random import choice
+from operator import attrgetter
+import os
 
 from config import *
 
 class Song():
-    def __init__(self, name, path, secons, time, fecha, rate):
+    def __init__(self, name, id, path, secons, time, date):
         self.name = name
+        self.id = id
         self.path = path
         self.secons = secons
         self.time = time
-        self.fecha = fecha
-        self.rate = rate
+        self.date = date
 
+#______________________________________________________________________________________________________
+#______________________________________________________________________________________________________
 
 class Main():
     def __init__(self):
         self.songs_all = []
-        try:
+
+        if os.path.exists(folder_music):
             self.initNameSongs()
-        except:
+        else:
             os.mkdir(folder_music)
+
         self.songs_playlist = self.songs_all.copy()
-        self.volumen = 100
-        self.id_next = 0
+        self.songs_previous = []
+
+        self.state_random = False
+        self.state_bucle = False
+
+        init(48000)
 
 #______________________________________________________________________________________________________
 
+    def formatoTime(self, s_total):
+        m, s = divmod(s_total,60)
+        h, m = divmod(m,60)
+
+        if not h:
+            return "{:2d}:{:02d}".format(int(m),int(s))
+        else:
+            return "{1d}:{:2d}:{:02d}".format(int(h),int(m),int(s))
+
+
     def initNameSongs(self):
         with os.scandir(folder_music) as it:
+            id = 0
             for file in it:
-                if file.is_file() and file.name.endswith(".mp3") and file.name not in self.songs_all:
+                if file.is_file() and file.name.endswith(".mp3"):
                     path = folder_music+"/"+file.name
-                    metadata = MP3(path)
-                    rate = metadata.info.sample_rate
-                    s_total = metadata.info.length
-                    m, s = divmod(s_total,60)
-                    h, m = divmod(m,60)
-                    song = Song(file.name[:-4], path, s_total, [int(h),int(m),int(s)], os.stat(path).st_ctime, rate)
-                    self.songs_all.append(song)
+                    s_total = MP3(path).info.length
 
+                    song = Song(file.name[:-4], id, path, s_total, self.formatoTime(s_total), os.stat(path).st_ctime)
+                    self.songs_all.append(song)
+                    id += 1
+
+    #______________________________________________________
 
     def filterNameSongs(self, song_name):
         self.songs_playlist.clear()
@@ -54,70 +74,88 @@ class Main():
 
     #______________________________________________________
 
-    def playByName(self, song_name):
-        for id, song in enumerate(self.songs_playlist):
-            if song_name == song.name:
-                init(song.rate)
+    def playById(self, song_id):
+        for song in self.songs_playlist:
+            if song_id == song.id:
                 music.load(song.path)
                 music.play()
-                music.set_volume(self.volumen)
-                self.id_next = id + 1
+                if (not any(self.songs_previous)) or (song.name!=self.songs_previous[-1].name):
+                    self.songs_previous.append(song)
                 return song
 
 
-    def playByOrder(self):
-        song = self.playByName(self.songs_playlist[self.id_next].name)
+    def playNext(self, id_next):
+        if self.state_bucle and any(self.songs_previous):
+            song = self.playById(self.songs_previous[-1].id)
+
+        elif self.state_random:
+            song = self.playById(choice(self.songs_playlist).id)
+
+        else:
+            if id_next != "":
+                song = self.playById(int(id_next))
+            else:
+                song = self.playById(self.songs_playlist[0].id)
+
         return song
 
 
-    def pauseSong(self):
+    def playPrevious(self):
+        if any(self.songs_previous):
+            if len(self.songs_previous) > 1:
+                del self.songs_previous[-1]
+            song = self.playById(self.songs_previous[-1].id)
+            return song
+        else:
+            return False
+
+
+    def pause(self):
         music.pause()
 
 
-    def resumeSong(self):
+    def resume(self):
         music.unpause()
 
 
-    def playNext():
-        pass
+    def isSongLoad(self):
+        return music.get_busy()
 
-
-    def playPrevious():
-        pass
-
-
-    def playRandom():
-        pass
-
-
-    def playBucle():
-        pass
-
+    #______________________________________________________
 
     def setVolumen(self, volumen):
-        self.volumen = volumen
-        try:
-            music.set_volume(volumen)
-        except:
-            pass
+        music.set_volume(volumen)
 
+    #______________________________________________________
 
     def setTime(self, time):
         music.rewind()
         music.set_pos(time)
 
+    #______________________________________________________
 
-    def getTime():
-        pass
-
-
-    def orderByDate():
-        pass
-
-
-    def orderByName():
-        pass
+    def orderByName(self, state):
+        if state:
+            self.songs_all.sort(key=attrgetter("name"), reverse=True)
+            self.songs_playlist.sort(key=attrgetter("name"), reverse=True)
+        else:
+            self.songs_all.sort(key=attrgetter("name"), reverse=False)
+            self.songs_playlist.sort(key=attrgetter("name"), reverse=False)
 
 
-    def orderByTime():
-        pass
+    def orderByDate(self, state):
+        if state:
+            self.songs_all.sort(key=attrgetter("date"), reverse=True)
+            self.songs_playlist.sort(key=attrgetter("date"), reverse=True)
+        else:
+            self.songs_all.sort(key=attrgetter("date"), reverse=False)
+            self.songs_playlist.sort(key=attrgetter("date"), reverse=False)
+
+
+    def orderByTime(self, state):
+        if state:
+            self.songs_all.sort(key=attrgetter("time"), reverse=True)
+            self.songs_playlist.sort(key=attrgetter("time"), reverse=True)
+        else:
+            self.songs_all.sort(key=attrgetter("time"), reverse=False)
+            self.songs_playlist.sort(key=attrgetter("time"), reverse=False)
