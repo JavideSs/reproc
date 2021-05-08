@@ -510,16 +510,16 @@ class LabelEditSong(Frame):
 
     #___
 
-    def __checkImpediments(self, action:str) -> bool:
+    def __checkImpediments(self, msg_error:str) -> bool:
         if self.__isTheSongPlaying():
-            messagebox.showerror("Error al " + action, "Accion no permitida con una cancion que está reproduciendose")
+            messagebox.showerror(msg_error, _("Action not allowed with a song that is playing"))
 
         elif not os.path.exists(config.playlist["path"]):
-            messagebox.showwarning("Error al " + action, "Se ha comprobado que no existe la carpeta")
+            messagebox.showwarning(msg_error, _("The folder does not to exist"))
             self.playlist_handler.delPlaylist(config.general["playlist"])
 
         elif not os.path.exists(self.song.path):
-            messagebox.showerror("Error al " + action, "Se ha comprobado que no existe la cancion")
+            messagebox.showerror(msg_error, _("The song does not to exist"))
             self.playlist - self.song
 
         else: return False
@@ -531,7 +531,7 @@ class LabelEditSong(Frame):
         song_name_new = self.entry_edit_song.get()
         if validEntryText(song_name_new, text_original=self.song.name):
 
-            if not self.__checkImpediments("renombrar"):
+            if not self.__checkImpediments(_("Rename failed")):
                 song_path_new = os.path.join(config.playlist["path"], song_name_new + self.song.extension)
                 try:
                     os.rename(self.song.path, song_path_new)
@@ -539,7 +539,7 @@ class LabelEditSong(Frame):
                     self.song.path = song_path_new
                     self.playlist.move(self.song, self.playlist.index(self.song.id))
                 except:
-                    messagebox.showerror("Error al renombrar", "Accion no permitida desconocida")
+                    messagebox.showerror(_("Rename failed"), _("Unknown action not allowed"))
 
         self._destroyLabel()
 
@@ -565,28 +565,28 @@ class LabelEditSong(Frame):
 
 
     def __move(self, playlist:str):
-        if not self.__checkImpediments("mover"):
+        if not self.__checkImpediments(_("Move failed")):
             playlist_path = config.user_config["Playlists"][playlist]["path"]
 
             if not os.path.exists(playlist_path):
-                messagebox.showwarning("Error al mover", "Se ha comprobado que no existe la carpeta destino")
+                messagebox.showwarning(_("Move failed"), _("Destination folder does not exist"))
                 self.playlist_handler.delPlaylist(playlist, in_tv=False)
 
             else:
                 try:
                     shutil.copy2(src=self.song.path, dst=playlist_path)
                 except:
-                    messagebox.showerror("Error al mover", "Accion no permitida desconocida")
+                    messagebox.showerror(_("Move failed"), _("Unknown action not allowed"))
 
         self._destroyLabel()
 
 
     def _del(self):
-        if not self.__checkImpediments("eliminar"):
+        if not self.__checkImpediments(_("Delete failed")):
             try:
                 os.remove(self.song.path)
                 self.playlist - self.song
             except:
-                messagebox.showerror("Error al eliminar", "Accion no permitida desconocida")
+                messagebox.showerror(_("Delete failed"), _("Unknown action not allowed"))
 
         self._destroyLabel()
