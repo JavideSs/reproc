@@ -10,10 +10,10 @@ from typing import Tuple
 
 #==================================================
 
-EMPTY_SEARCH_TEXT = "Buscar canción..."
 
 class PlaylistControl(Frame):
     def __init__(self, w, *args, **kwargs):
+        self.EMPTY_SEARCH_TEXT = _("Search song...")    #After defined _ by gettext
 
         self.playlist = w.playlist
 
@@ -44,7 +44,7 @@ class PlaylistControl(Frame):
             textvariable=self.state_entry_search)
         self.entry_search.grid(row=0, column=2, sticky="nsew", pady=5)
 
-        self.entry_search.insert(0, EMPTY_SEARCH_TEXT)
+        self.entry_search.insert(0, self.EMPTY_SEARCH_TEXT)
         self.entry_search.bind("<FocusIn>", self._entryFocusEnter)
         self.entry_search.bind("<FocusOut>", self._entryFocusLeave)
 
@@ -101,7 +101,7 @@ class PlaylistControl(Frame):
 
     def _entryFocusEnter(self, _event):
         #Delete default text
-        if self.entry_search.get() == EMPTY_SEARCH_TEXT:
+        if self.entry_search.get() == self.EMPTY_SEARCH_TEXT:
             self.entry_search.delete(0, "end")
 
 
@@ -109,22 +109,22 @@ class PlaylistControl(Frame):
         #Delete text and insert default text if is invalid text
         if not validEntryText(self.entry_search.get()):
             self.entry_search.delete(0, "end")
-            self.entry_search.insert(0, EMPTY_SEARCH_TEXT)
+            self.entry_search.insert(0, self.EMPTY_SEARCH_TEXT)
             config.playlist["filter"] = ""
 
 
     def _entryClear(self):
         #Delete text and insert default text if there is no focus
-        if self.entry_search.get() != EMPTY_SEARCH_TEXT:
+        if self.entry_search.get() != self.EMPTY_SEARCH_TEXT:
             self.entry_search.delete(0, "end")
             config.playlist["filter"] = ""
             if self.focus_get() != self.entry_search:
-                self.entry_search.insert(0, EMPTY_SEARCH_TEXT)
+                self.entry_search.insert(0, self.EMPTY_SEARCH_TEXT)
 
 
     def _search(self, *_event):
         song_name = self.state_entry_search.get()
-        if song_name != EMPTY_SEARCH_TEXT:
+        if song_name != self.EMPTY_SEARCH_TEXT:
             self.playlist.filterName(song_name)
             config.playlist["filter"] = song_name
 
@@ -190,10 +190,9 @@ class PlaylistControl(Frame):
 #==================================================
 
 
-EMPTY_MENUBTN = "Selecciona Playlist"
-
 class PlaylistHandlerSet(Frame):
     def __init__(self, w:PlaylistControl, *args, **kwargs):
+        self.EMPTY_MENUBTN = _("Select Playlist")    #After defined _ by gettext
 
         self.playlist = w.playlist
         self.playlist_control = w
@@ -214,7 +213,7 @@ class PlaylistHandlerSet(Frame):
             activeforeground=config.colors["FG"],
             tearoff=False)
 
-        self.menu.add_command(label="Importar Playlist", command=self._newPlaylist)
+        self.menu.add_command(label=_("Import Playlist"), command=self._newPlaylist)
         self.menu.add_separator()
         for playlist in config.user_config["Playlists"]:
             #https://stackoverflow.com/questions/11723217/python-lambda-doesnt-remember-argument-in-for-loop
@@ -226,7 +225,7 @@ class PlaylistHandlerSet(Frame):
     #__________________________________________________
 
     def _newPlaylist(self):
-        folder:str = filedialog.askdirectory(title="Selecciona carpeta para nueva Playlist")
+        folder:str = filedialog.askdirectory(title=_("Select folder for new playlist"))
         if folder == "": return
 
         playlist = os.path.basename(folder)
@@ -249,13 +248,13 @@ class PlaylistHandlerSet(Frame):
         and closed without selecting one playlist
         '''
         if playlist == "":
-            self.menubtn["text"] = EMPTY_MENUBTN
+            self.menubtn["text"] = self.EMPTY_MENUBTN
             return
 
         playlist_path = config.user_config["Playlists"][playlist]["path"]
 
         if not os.path.exists(playlist_path):
-            messagebox.showerror("Error al cargar", "Se ha comprobado que no existe la carpeta")
+            messagebox.showerror(_("Load failed"), _("The folder does not to exist"))
             self.delPlaylist(playlist)
             return
 
@@ -274,7 +273,7 @@ class PlaylistHandlerSet(Frame):
 
         if in_tv:
             config.general["playlist"] = ""
-            self.menubtn["text"] = EMPTY_MENUBTN
+            self.menubtn["text"] = self.EMPTY_MENUBTN
             self.playlist.delPlaylist()
 
 
@@ -337,7 +336,7 @@ class TopLevelPlaylistEdit(TkPopup):
         #___
 
         self.frame_path = TkFrameInfo(self.w,
-            text="Ruta:",
+            text=_("Path:"),
             lbl_width=5, info_width=25,
             info_bg=config.colors["BG"])
         self.frame_path.grid(row=1, column=0, columnspan=3, padx=5, pady=(10,5))
@@ -347,7 +346,7 @@ class TopLevelPlaylistEdit(TkPopup):
         #___
 
         self.frame_size = TkFrameInfo(self.w,
-            text="Tamaño en disco:",
+            text=_("Size on disk:"),
             lbl_width=18, info_width=10,
             info_bg=config.colors["BG"])
         self.frame_size.grid(row=2, column=0, columnspan=3, padx=5)
@@ -358,7 +357,7 @@ class TopLevelPlaylistEdit(TkPopup):
         #___
 
         self.frame_num = TkFrameInfo(self.w,
-            text="Numero de canciones:",
+            text=_("Number of songs:"),
             lbl_width=18, info_width=10,
             info_bg=config.colors["BG"])
         self.frame_num.grid(row=3, column=0, columnspan=3, padx=5, pady=(5,10))
@@ -370,7 +369,7 @@ class TopLevelPlaylistEdit(TkPopup):
 
         self.btn_add_songs = TkButtonTextHoverFg(self.w,
             command=self._addSongs,
-            text="----- Agregar canciones -----",
+            text=_("----- Add songs -----"),
             bg = config.colors["BG"],
             fg=config.colors["FG"],
             fg_on_hover="blue")
@@ -389,7 +388,7 @@ class TopLevelPlaylistEdit(TkPopup):
 
     def _delPlaylist(self):
         self.bell()
-        state_delete = messagebox.askyesnocancel("Eliminar", "Quieres eliminar también la playlist del path")
+        state_delete = messagebox.askyesnocancel(_("Delete"), _("Do you also want to delete the playlist from the path?"))
 
         if state_delete is None: return
 
@@ -410,11 +409,11 @@ class TopLevelPlaylistEdit(TkPopup):
                 self.playlist_handler_set.renamePlaylist(playlist_name_new, playlist_path_new)
                 self.frame_path.insert(config.playlist["path"])
             except:
-                messagebox.showerror("Error al renombrar", "Accion no permitida desconocida")
+                messagebox.showerror(_("Rename failed"), _("Unknown action not allowed"))
 
 
     def _addSongs(self):
-        songs_path = filedialog.askopenfilenames(title="Select")
+        songs_path = filedialog.askopenfilenames(title=_("Select"))
         if not songs_path: return
 
         for song_path in songs_path:
@@ -423,4 +422,4 @@ class TopLevelPlaylistEdit(TkPopup):
                 song_path_new = os.path.join(config.playlist["path"], os.path.basename(song_path))
                 self.playlist + Song(song_path_new)
             except:
-                messagebox.showerror("Error al cargar", "Accion no permitida desconocida")
+                messagebox.showerror(_("Load failed"), _("Unknown action not allowed"))

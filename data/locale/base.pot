@@ -1,18 +1,96 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR ORGANIZATION
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Copyright (C) Reproc
+# Javier Mellado Sánchez <javimelladoo@gmail.com>, 2021.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2021-04-18 16:27+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=cp1252\n"
+"POT-Creation-Date: 2021-05-08 22:35+0200\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
+#: program/musicTab/playlist.py:515
+msgid "Action not allowed with a song that is playing"
+msgstr ""
+
+#: program/musicTab/playlist.py:518 program/musicTab/playlist_control.py:257
+msgid "The folder does not to exist"
+msgstr ""
+
+#: program/musicTab/playlist.py:522
+msgid "The song does not to exist"
+msgstr ""
+
+#: program/musicTab/playlist.py:534 program/musicTab/playlist.py:542
+#: program/musicTab/playlist_control.py:412
+msgid "Rename failed"
+msgstr ""
+
+#: program/musicTab/playlist.py:542 program/musicTab/playlist.py:579
+#: program/musicTab/playlist.py:590 program/musicTab/playlist_control.py:412
+#: program/musicTab/playlist_control.py:425
+msgid "Unknown action not allowed"
+msgstr ""
+
+#: program/musicTab/playlist.py:568 program/musicTab/playlist.py:572
+#: program/musicTab/playlist.py:579
+msgid "Move failed"
+msgstr ""
+
+#: program/musicTab/playlist.py:572
+msgid "Destination folder does not exist"
+msgstr ""
+
+#: program/musicTab/playlist.py:585 program/musicTab/playlist.py:590
+msgid "Delete failed"
+msgstr ""
+
+#: program/musicTab/playlist_control.py:16
+msgid "Search song..."
+msgstr ""
+
+#: program/musicTab/playlist_control.py:195
+msgid "Select Playlist"
+msgstr ""
+
+#: program/musicTab/playlist_control.py:216
+msgid "Import Playlist"
+msgstr ""
+
+#: program/musicTab/playlist_control.py:228
+msgid "Select folder for new playlist"
+msgstr ""
+
+#: program/musicTab/playlist_control.py:257
+#: program/musicTab/playlist_control.py:425
+msgid "Load failed"
+msgstr ""
+
+#: program/musicTab/playlist_control.py:339
+msgid "Path:"
+msgstr ""
+
+#: program/musicTab/playlist_control.py:349
+msgid "Size on disk:"
+msgstr ""
+
+#: program/musicTab/playlist_control.py:360
+msgid "Number of songs:"
+msgstr ""
+
+#: program/musicTab/playlist_control.py:372
+msgid "----- Add songs -----"
+msgstr ""
+
+#: program/musicTab/playlist_control.py:391
+msgid "Delete"
+msgstr ""
+
+#: program/musicTab/playlist_control.py:391
+msgid "Do you also want to delete the playlist from the path?"
+msgstr ""
+
+#: program/musicTab/playlist_control.py:416
+msgid "Select"
+msgstr ""
 
