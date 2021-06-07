@@ -1,5 +1,6 @@
 #Build .exe -> cmd>> python setup.py build_exe
-import os, sys, shutil
+#Build .exe with installer -> cmd>> python setup.py bdist_msi(win)/bdist_dmg(mac)
+import os, sys
 from cx_Freeze import setup, Executable
 
 os.environ["TCL_LIBRARY"] = os.path.join(sys.exec_prefix, "tcl", "tcl8.6")
@@ -20,19 +21,22 @@ setup(
     install_requires="requirements.txt",
     python_requires='>=3.7.4',
 
-    executables=[Executable(
+    executables = [Executable (
         script="reproc.py",
-        icon=os.path.join("data", "images", "images_files", "icon.ico"),
-        base="Win32GUI" if sys.platform == "win32" else None)],
+        target_name="Reproc",
+        #icon=os.path.join("data", "images", "images_files", "CD" "IconExplorer.ico"),
+        base="Win32GUI" if sys.platform == "win32" else None
+    )],
 
     options = {"build_exe": {
+        "optimize": 1,
+        "include_msvcr": True,
         "packages": ["pygame", "PIL", "tinytag"],
         "includes": ["tkinter", "pygame", "PIL", "tinytag"],
-        'include_msvcr': True
-    }},
+        "excludes" : [],
+        #"include_files": [
+        #    os.path.join(sys.path[2], "tcl86t.dll"),
+        #    os.path.join(sys.path[2], "tk86t.dll")
+        #]
+    }}
 )
-
-path = os.path.abspath(os.path.join(os.path.realpath(__file__), os.pardir))
-build_path = os.path.join(path, 'build', 'exe.win32-3.7')
-shutil.copy(r'C:\Users\javim\AppData\Local\Programs\Python\Python37-32\DLLs\tcl86t.dll', build_path)
-shutil.copy(r'C:\Users\javim\AppData\Local\Programs\Python\Python37-32\DLLs\tk86t.dll', build_path)
