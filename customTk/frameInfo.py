@@ -29,3 +29,6 @@ class TkFrameInfo(Frame):
         self.info.delete(0, "end")
         self.info.insert(0, text)
         self.info["state"] = "readonly"
+
+    def get(self) -> str:
+        return self.info.get()
