@@ -233,7 +233,7 @@ class Playlist(Treeview):
 
     def playById(self, song_id:int):
         #Reset previous playing itemTV
-        if len(self.__songs_previous_id) > 0:
+        if len(self.__songs_previous_id):
             self.tag_configure(self.__song_playing_id,
                 image=self.imgs["none"],
                 foreground=config.colors["TV_FG"])
@@ -255,7 +255,7 @@ class Playlist(Treeview):
             foreground=config.colors["TV_FG_PLAYING"])
 
         #Push to "self.__songs_previous_id" if it is the first song or it is not the previous song
-        if (not any(self.__songs_previous_id)) or (song_id!=self.__songs_previous_id[-1]):
+        if (not len(self.__songs_previous_id)) or (song_id!=self.__songs_previous_id[-1]):
             self.__songs_previous_id.append(song_id)
 
 
@@ -289,7 +289,7 @@ class Playlist(Treeview):
                 return False
 
             #First song to listen
-            elif any(self.get_children()):
+            elif len(self.get_children()):
                 self.playNext()
                 return True
 
@@ -298,11 +298,11 @@ class Playlist(Treeview):
 
     def playNext(self) -> bool:
         #In bucle
-        if self.__state_loop and any(self.__songs_previous_id):
+        if self.__state_loop and len(self.__songs_previous_id):
             mixer.music.rewind()
 
         #In random and any in TV
-        elif self.__state_random and any(self.get_children()):
+        elif self.__state_random and len(self.get_children()):
             self.playById(choice([song for song in self.__songs_all if song.visible_inplaylist]).id)
 
         #Now and next is in TV
@@ -310,7 +310,7 @@ class Playlist(Treeview):
             self.playById(int(self.next(self.__song_playing_id)))
 
         #Any in TV
-        elif any(self.get_children()):
+        elif len(self.get_children()):
             #Play first itemTV in view
             self.playById(int(self.identify_row(ROW_HEIGHT)))
 
@@ -319,12 +319,13 @@ class Playlist(Treeview):
             return False
 
         self.selection_set(self.__song_playing_id)
+        self.focus(self.__song_playing_id)
         self.see(self.__song_playing_id)
         return True
 
 
     def playPrevious(self) -> bool:
-        if len(self.__songs_previous_id) > 0:
+        if len(self.__songs_previous_id):
             #One is always left in the "self.__songs_previous_id", it loops with itself
             if len(self.__songs_previous_id) > 1:
                 del self.__songs_previous_id[-1]
@@ -340,6 +341,7 @@ class Playlist(Treeview):
 
             if self.exists(self.__songs_previous_id[-1]):
                 self.selection_set(self.__song_playing_id)
+                self.focus(self.__song_playing_id)
                 self.see(self.__song_playing_id)
 
             return True

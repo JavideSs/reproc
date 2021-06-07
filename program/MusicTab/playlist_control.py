@@ -351,7 +351,7 @@ class TopLevelPlaylistEdit(TkPopup):
             info_bg=config.colors["BG"])
         self.frame_size.grid(row=2, column=0, columnspan=3, padx=5)
 
-        playlist_size_MB = sum(map(lambda song: os.path.getsize(song.path), self.playlist.getAllSongs())) // 1024 // 1024
+        playlist_size_MB = sum(map(lambda song: os.path.getsize(song.path), self.playlist.getAllSongs())) // (1024*1024)
         self.frame_size.insert(f"{playlist_size_MB} MB")
 
         #___
@@ -406,6 +406,7 @@ class TopLevelPlaylistEdit(TkPopup):
             try:
                 playlist_path_new = os.path.join(os.path.dirname(config.playlist["path"]), playlist_name_new)
                 os.rename(config.playlist["path"], playlist_path_new)
+
                 self.playlist_handler_set.renamePlaylist(playlist_name_new, playlist_path_new)
                 self.frame_path.insert(config.playlist["path"])
             except:
@@ -418,8 +419,17 @@ class TopLevelPlaylistEdit(TkPopup):
 
         for song_path in songs_path:
             try:
+                song_name:str = os.path.basename(song_path)
+
+                if not song_name.endswith(config.SUPPORTED_SONG_FORMATS):
+                    messagebox.showerror(_("Load failed"), _("Sound format not supported "))
+                    continue
+
+                song_path_new = os.path.join(config.playlist["path"], song_name)
                 shutil.copy2(src=song_path, dst=config.playlist["path"])
-                song_path_new = os.path.join(config.playlist["path"], os.path.basename(song_path))
+
                 self.playlist + Song(song_path_new)
+                self.frame_size.insert(int(self.frame_size.get()[:-3]) + (os.path.getsize(song_path_new) // (1024*1024)))
+                self.frame_num.insert(int(self.frame_num.get()) + 1)
             except:
                 messagebox.showerror(_("Load failed"), _("Unknown action not allowed"))
