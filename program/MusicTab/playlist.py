@@ -16,8 +16,8 @@ from pygame import mixer
 
 #==================================================
 
-COLUMN_TITLE_WIDTH = 345
-COLUMN_DURATION_WIDTH = 40
+COLUMN_TITLE_WIDTH = 335
+COLUMN_DURATION_WIDTH = 50
 ROW_HEIGHT = 25
 N_ROWS = 14
 IMGS_SIZE = (ROW_HEIGHT,ROW_HEIGHT)
