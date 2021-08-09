@@ -61,7 +61,7 @@ class SongControl(Frame):
         #___
 
         self.btn_play_previous = TkButtonImgHoverImg(self,
-            command=lambda: w._play(self.playlist.playPrevious),
+            command=w.fprevious,
             imgs=(b64img.btn_playizq,),
             bg=config.colors["BG"])
         self.btn_play_previous.grid(row=0, column=4, pady=(8,0))
@@ -69,7 +69,7 @@ class SongControl(Frame):
         #___
 
         self.btn_playpause = TkButtonImgHoverImg(self,
-            command=lambda: w._play(self.playlist.playpause),
+            command=w.fplaypause,
             imgs=(b64img.btn_play,
                 b64img.btn_playing),
             bg=config.colors["BG"])
@@ -78,7 +78,7 @@ class SongControl(Frame):
         #___
 
         self.btn_play_next = TkButtonImgHoverImg(self,
-            command=lambda: w._play(self.playlist.playNext),
+            command=w.fnext,
             imgs=(b64img.btn_playder,),
             bg=config.colors["BG"])
         self.btn_play_next.grid(row=0, column=6, pady=(8,0))

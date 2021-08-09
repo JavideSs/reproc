@@ -18,6 +18,13 @@ class MusicTab(Frame):
 
         #___
 
+        self.fdirectplay = lambda: self._play(self.playlist.directPlay)
+        self.fprevious = lambda: self._play(self.playlist.playPrevious)
+        self.fplaypause = lambda: self._play(self.playlist.playpause)
+        self.fnext = lambda: self._play(self.playlist.playNext)
+
+        #___
+
         self.playlist = Playlist(self, height=14)
         self.playlist.grid(row=1, column=0, sticky="nsew")
 
@@ -44,15 +51,15 @@ class MusicTab(Frame):
         #___
 
         #Direct play when pre click on an itemTV's play image
-        self.playlist.bind("<ButtonRelease-1>", lambda event: self._play(self.playlist.directPlay) if event.x < ROW_HEIGHT else None)
+        self.playlist.bind("<ButtonRelease-1>", lambda event: self.fdirectplay() if event.x < ROW_HEIGHT else None)
         #Direct play when the return key is pressed on an itemTV
-        self.playlist.bind("<Return>", lambda _event: self._play(self.playlist.directPlay))
+        self.playlist.bind("<Return>", lambda _event: self.fdirectplay())
 
         #Set time when pre click on the timeline
         self.song_control.timeline.scale_time.bind("<ButtonRelease-1>", self._setTime)
 
         #When these keys are pressed and there is no focus on an entry
-        w.bind_all("<space>", lambda event: self._play(self.playlist.playpause) if not str(event.widget).endswith("entry") else None)
+        w.bind_all("<space>", lambda event: self.fplaypause() if not str(event.widget).endswith("entry") else None)
         w.bind_all("<Right>", lambda event: self._moveTime(5) if not str(event.widget).endswith("entry") else None)
         w.bind_all("<Left>", lambda event: self._moveTime(-5) if not str(event.widget).endswith("entry") else None)
         #Fix: Default bind of ttk.treeview focuses on the previous itemTV clicked directly
@@ -88,10 +95,12 @@ class MusicTab(Frame):
         if self.playlist.isSongPlaying():
             self.song_control.btn_playpause.set_img(1)
             self.song_control.artwork.playGif()
+            self.w.win7_features.updateThumbBar(1)
 
         elif self.playlist.isSongLoad():
             self.song_control.btn_playpause.set_img(0)
             self.song_control.artwork.stopGif()
+            self.w.win7_features.updateThumbBar(0)
 
 
     def _setTime(self, _event):
@@ -111,7 +120,7 @@ class MusicTab(Frame):
                 Playlist.setTime(time_new)
                 self.song_control.timeline.setTime(time_new)
             else:
-                self._play(self.playlist.playNext)
+                self.fnext()
 
             return "break"  #Avoid focuses on the previous itemTV clicked directly
     #___
@@ -127,6 +136,6 @@ class MusicTab(Frame):
                 if time_new < song_playing.time:
                     self.song_control.timeline.setTime(time_new)
                 else:
-                    self._play(self.playlist.playNext)
+                    self.fnext()
 
         self.w.after(1000, self._updateTimeLoop)

@@ -3,6 +3,7 @@ from .buttonText import TkButtonTextHoverFg, TkButtonTextHoverBg
 from .canvasGif import TkCanvasGif
 from .frameInfo import TkFrameInfo
 from .popup import TkPopup
+from .win7Features import Win7Features
 
 #If there is not text or all the text there is are spaces
 #len(self.entry_search.get()) - self.entry_search.get().count(" ") == 0

@@ -39,13 +39,21 @@ setup(
     }}
 )
 
+def copy2List(src:str, dst:str, l:list):
+    for file in l:
+        shutil.copy2(os.path.join(src, file), dst)
+
 #Copy data and themes
 with os.scandir("build") as it:
     for build in it:
         path_themes = os.path.join(build.path, "customTk", "ttk_themes")
+        path_tbimages = os.path.join(path_data, "customTk", "CThumbBar")
         path_data = os.path.join(build.path, "data")
         path_locale = os.path.join(path_data, "locale")
 
         shutil.copytree(os.path.join("customTk", "ttk_themes"), path_themes)
         shutil.copytree(os.path.join("data", "locale"), path_locale)
         shutil.copy2(os.path.join("data", "user_config.json"), path_data)
+        copy2List(os.path.join("customTk", "CThumbBar"), path_tbimages,
+            ("TBbtns96.bmp", "TBbtns120.bmp", "TBbtns144.bmp")
+        )

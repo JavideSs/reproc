@@ -15,7 +15,6 @@
 - Option to listen to streaming channels (radio).
 - Implementation of different themes.
 - Implementation of different languages.
-- Miniature toolbar Windows.
 - Systray program support Windows.
 - Custom title bar.
 - Updater with github releases.

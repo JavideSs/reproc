@@ -1,5 +1,6 @@
 from tkinter import Tk
 from tkinter.ttk import Style
+from customTk import Win7Features
 
 from data import config, images as b64img
 from data.images.utilities import b64ToTk
@@ -20,7 +21,7 @@ class Reproc(Tk):
 
         self.resizable(False, False)
         self.eval("tk::PlaceWindow . center")
-        self.protocol("WM_DELETE_WINDOW", self.saveJson)
+        self.protocol("WM_DELETE_WINDOW", self.onDelete)
 
         self.style = Style(self)
         self.setTheme()
@@ -29,7 +30,19 @@ class Reproc(Tk):
         self.tab_music = MusicTab(self)
         self.tab_music.pack()
 
+        self.win7_features = Win7Features(self)
+        self.win7_features.createThumbBar(
+            self.tab_music.fprevious,
+            self.tab_music.fplaypause,
+            self.tab_music.fnext,
+        )
+
     #__________________________________________________
+
+    def onDelete(self):
+        self.saveJson()
+        self.win7_features.releaseThumbBar()
+
 
     def saveJson(self):
         self.tab_music.saveJson()

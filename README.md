@@ -16,6 +16,7 @@ Refer to user guide at
 - Modify songs/playlists directly in the application.
 - Handling multiplaylists.
 - Keyboard shortcuts.
+- Win32 Thumbnail toolbar like Windows Media Player.
 - Data constancy when reopening the application.
 
 ## Dependencies

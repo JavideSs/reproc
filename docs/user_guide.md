@@ -94,6 +94,12 @@ These actions will have a direct consequence on the disk.
 - With the **RIGHT/LEFT ARROWS KEYS** we can move forward/backward respectively 5s of the current song
 - With the **UP/DOWN ARROWS KEYS** we can move through the playlist.
 
+## Win32 Thumbnail toolbar
+The application in the taskbar has buttons on the thumbnail to pause, continue, play previous or next song.  
+This feature is present in Windows systems as of Windows 7. 
+
+![Screenshot](images/thumbbar.jpg?raw=true "Thumb Bar")
+
 ## Audio formats
 Unfortunately the pygame sld2 mixer interface for python only supports ogg for all platforms, and also mp3 for windows.  
 In addition, it is not possible to change the frequency dynamically, if a song is detected with a different frequency than the previous one, the mixer is reinitialized, which means a small delay of 1s.
