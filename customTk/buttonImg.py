@@ -4,13 +4,14 @@ from data.images.utilities import b64ToTk, b64ToPIL, PILToTk, brightensColorImg
 
 from abc import ABC, abstractmethod
 
-#Classes to add style to a button
+from data.data_types import *
+
 #Receives a tuple of images that it contemplates
 #They can be set automatically on each click, or manually
 #==================================================
 
 class TkButtonImg(ABC, Button):
-    def __init__(self, w, command, imgs:tuple, bg:str, change_img_on_click:bool=False, *args, **kwargs):
+    def __init__(self, w, command:Callable, imgs:Tuple[TkImage,...], bg:str, change_img_on_click:bool=False, *args, **kwargs):
         self.imgs = imgs
         self.img_tag_now = 0
 
@@ -24,10 +25,10 @@ class TkButtonImg(ABC, Button):
             *args, **kwargs)
 
 
-    def _on_click(self, command):
+    def _on_click(self, command:Callable):
         command()
         if self.img_tag_now == len(self.imgs)-1:    self.img_tag_now = 0
-        else:                                       self.img_tag_now = self.img_tag_now + 1
+        else:                                       self.img_tag_now += 1
 
 
     #Set image manually
@@ -62,7 +63,7 @@ class TkButtonImgHoverNone(TkButtonImg):
         super().__init__(w, *args, **kwargs)
 
 
-    def _on_click(self, command):
+    def _on_click(self, command:Callable):
         super()._on_click(command)
         self["image"] = self.imgs[self.img_tag_now]
 
@@ -71,7 +72,7 @@ class TkButtonImgHoverNone(TkButtonImg):
 
 
 class TkButtonImgHoverImg(TkButtonImgHover):
-    def __init__(self, w, imgs:tuple, *args, **kwargs):
+    def __init__(self, w, imgs:Tuple[str,...], *args, **kwargs):
         self.is_hover = False
 
         func_brightens = lambda img: PILToTk(brightensColorImg(b64ToPIL(img), 1.5))
@@ -88,7 +89,7 @@ class TkButtonImgHoverImg(TkButtonImgHover):
             super().set_img(tag)
 
 
-    def _on_click(self, command):
+    def _on_click(self, command:Callable):
         super()._on_click(command)
         self["image"] = self.imgs_brightens[self.img_tag_now]
 
@@ -106,7 +107,7 @@ class TkButtonImgHoverImg(TkButtonImgHover):
 
 
 class TkButtonImgHoverBg(TkButtonImgHover):
-    def __init__(self, w, imgs:tuple, bg:str, bg_on_hover:str, *args, **kwargs):
+    def __init__(self, w, imgs:Tuple[str,...], bg:str, bg_on_hover:str, *args, **kwargs):
         self.bg = bg
         self.bg_hover = bg_on_hover
 
@@ -115,7 +116,7 @@ class TkButtonImgHoverBg(TkButtonImgHover):
         self["highlightbackground"] = self.bg_hover
 
 
-    def _on_click(self, command):
+    def _on_click(self, command:Callable):
         super()._on_click(command)
         self["image"] = self.imgs[self.img_tag_now]
 

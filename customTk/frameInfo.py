@@ -1,6 +1,8 @@
 from tkinter import Entry
 from tkinter.ttk import Frame, Separator, Label
 
+from data.data_types import *
+
 #==================================================
 
 class TkFrameInfo(Frame):
@@ -24,7 +26,7 @@ class TkFrameInfo(Frame):
         self.sep.grid(row=1, column=0, columnspan=2, sticky="new")
 
 
-    def insert(self, text):
+    def insert(self, text:str):
         self.info["state"] = "normal"
         self.info.delete(0, "end")
         self.info.insert(0, text)

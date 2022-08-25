@@ -1,6 +1,8 @@
 from tkinter import Toplevel, Widget, Frame, Label
 from customTk import TkButtonTextHoverBg
 
+from data.data_types import *
+
 #==================================================
 
 class TkPopup(Toplevel):
@@ -43,7 +45,7 @@ class TkPopup(Toplevel):
 
 
     #https://stackoverflow.com/questions/23836000/can-i-change-the-title-bar-in-tkinter/48738216#48738216
-    def getCoord(self, event):
+    def getCoord(self, event:Event):
         coord_x_titlebar = self.winfo_x() - event.x_root
         coord_y_titlebar = self.winfo_y() - event.y_root
 

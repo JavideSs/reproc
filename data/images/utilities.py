@@ -1,25 +1,39 @@
+from tkinter import PhotoImage
+from PIL import Image, ImageTk, ImageColor, ImageEnhance
+
 from io import BytesIO
 import base64
 
-from tkinter import PhotoImage
-from PIL import Image, ImageTk, ImageColor, ImageEnhance
-from PIL.Image import Image as PILImage
+from data.data_types import *
 
 #==================================================
+
+def fileTob64(img_path:str) -> str:
+    with open(img_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode("utf-8")
+
+
+def fileToPIL(img_file:str) -> PILImage:
+    return Image.open(img_file)
+
 
 def b64ToPIL(img_b64:str) -> PILImage:
     return Image.open(BytesIO(base64.b64decode(img_b64)))
 
 
-def b64ToTk(img_b64:str) -> PILImage:
+def fileToTk(img_file:str) -> TkImage:
+    return PhotoImage(file=img_file)
+
+
+def b64ToTk(img_b64:str) -> TkImage:
     return PhotoImage(data=img_b64)
 
 
-def PILToTk(img_pil:PILImage) -> PhotoImage:
+def PILToTk(img_pil:PILImage) -> TkImage:
     return ImageTk.PhotoImage(img_pil)
 
 
-def TkSolid(size:int, color:str) -> PhotoImage:
+def TkSolid(size:int, color:str) -> TkImage:
     return ImageTk.PhotoImage(Image.new(mode="RGB", size=size, color=color))
 
 
@@ -47,12 +61,6 @@ def changeColorImg(img:PILImage, color_old:str, color_new:str=None) -> PILImage:
             pixel_data[x,y] = (r,g,b,a)
 
     return img
-
-
-def imgTob64(img_path:str) -> str:
-    with open(img_path, "rb") as img_file:
-        return base64.b64encode(img_file.read()).decode("utf-8")
-
 
 #==================================================
 

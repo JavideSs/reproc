@@ -2,12 +2,14 @@ from tkinter import Canvas
 
 from PIL import Image, ImageTk
 
+from data.data_types import *
+
 #==================================================
 
 #Class to add and control a transparent gif in tkinter
 #https://stackoverflow.com/questions/20370864/no-transparency-in-animated-gif-with-tkinter
 class TkCanvasGif(Canvas):
-    def __init__(self, w, gif:Image.Image, size:tuple, bg:str=None, *args, **kwargs):
+    def __init__(self, w, gif:PILImage, size:Tuple[int,int], bg:str=None, *args, **kwargs):
 
         super().__init__(w,
             width=size[0], height=size[1],
@@ -43,7 +45,7 @@ class TkCanvasGif(Canvas):
         self.canvas_gif = self.create_image(0,0, image=self.gif_seq_tk[0], anchor="nw")
 
 
-    def isPlayingGif(self):
+    def isPlayingGif(self) -> bool:
         return self.__cancel_id is not None
 
 

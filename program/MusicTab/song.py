@@ -1,24 +1,24 @@
 import os, struct
 from io import BytesIO
-from typing import Tuple
 
 from PIL import Image
 from tinytag import TinyTag
 
+from data.data_types import *
+
 #==================================================
 
 class Song():
-    NEXT_ID = 0
+    next_id = 0
 
     def __init__(self, song_path:str):
-        self.setPath(song_path)
+        self.id = Song.next_id
+        Song.next_id += 1
 
+        self.path = song_path
         self.time = round(TinyTag.get(self.path).duration)
         self.date = os.path.getmtime(self.path)
-
         self.visible_inplaylist = True
-        self.id = Song.NEXT_ID
-        Song.NEXT_ID += 1
 
     #__________________________________________________
 
@@ -66,7 +66,7 @@ class Song():
         return TinyTag.get(self.path).samplerate
 
 
-    def getArt(self, scale:Tuple[int, int]) -> Image.Image:
+    def getArt(self, scale:Tuple[int,int]) -> PILImage:
         art_data = TinyTag.get(self.path, image=True).get_image()
 
         #https://github.com/devsnd/tinytag/issues/100

@@ -6,6 +6,8 @@ from data import config, images as b64img
 from data.images.utilities import b64ToPIL, PILToTk
 from .song import Song
 
+from data.data_types import *
+
 #==================================================
 
 class SongControl(Frame):
@@ -211,11 +213,11 @@ class Timeline(Frame):
 
         #___
 
-        self.song_playing = None
+        self.song_playing:Song = None
 
     #__________________________________________________
 
-    def _setTimeDirect(self, event):
+    def _setTimeDirect(self, event:Event):
         self.scale_time.event_generate("<Button-3>", x=event.x, y=event.y)
         return "break"  #Avoid recoil when holding
 
@@ -241,8 +243,8 @@ class Timeline(Frame):
 
 
     '''
-    #Song time to Scale time
-        #time -> song.time | x -> 100 | => x = time*100/song.time
+    Song time to Scale time
+    time -> song.time | x -> 100 | => x = time*100/song.time
     '''
     def setTime(self, time:int):
         self.state_scale_time.set((time * 100) / self.song_playing.time)
@@ -268,7 +270,7 @@ class Artwork(TkCanvasGif):
         self.artwork_id = self.create_image(0,0, image=self.artwork_default, anchor="nw")
         self.setGif()
 
-        self.__artwork = None
+        self.__artwork:TkImage = None
 
     #__________________________________________________
 

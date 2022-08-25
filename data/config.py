@@ -1,6 +1,9 @@
 import json, os, platform
 
+from data.data_types import *
+
 SYSTEM = platform.system()
+SYSTEM_ARCH = platform.architecture()[0]
 JSON_FILE_PATH = os.path.join("data", "user_config.json")
 
 #==================================================
@@ -13,9 +16,9 @@ def save_user_config():
         json.dump(user_config, json_user_config, indent=4)
 
 
-general = user_config["State"]
-playlist = {}   #user_config["Playlists"][general["playlist"]]
-colors = user_config["Themes"][user_config["State"]["theme"]]
+general:Dict = user_config["State"]
+playlist:Dict = {}   #user_config["Playlists"][general["playlist"]]
+colors:Dict = user_config["Themes"][user_config["State"]["theme"]]
 
 #==================================================
 

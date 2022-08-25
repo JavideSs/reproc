@@ -10,9 +10,10 @@ import os, shutil
 from random import choice
 from operator import attrgetter
 from locale import setlocale, strxfrm, LC_ALL
-from typing import List, Tuple
 
 from pygame import mixer
+
+from data.data_types import *
 
 #==================================================
 
@@ -82,8 +83,8 @@ class Playlist(Treeview):
         self.__song_playing_id = NONE_ID
         self.__song_hover_id = NONE_ID
 
-        self.__songs_all: List[Song] = []
-        self.__songs_previous_id: List[int] = []
+        self.__songs_all:List[Song,...] = []
+        self.__songs_previous_id:List[int,...] = []
 
     #__________________________________________________
 
@@ -98,7 +99,7 @@ class Playlist(Treeview):
             self.__song_hover_id = NONE_ID
 
 
-    def _motionItem(self, event):
+    def _motionItem(self, event:Event):
         #Fix down scroll
         if event.delta == -120:
             #if its not the beginning
@@ -165,7 +166,7 @@ class Playlist(Treeview):
     #___
 
     #Insert song in TV
-    def __insertSongTV(self, song:Song, pos="end"):
+    def __insertSongTV(self, song:Song, pos:str="end"):
         self.insert(
             "", pos,
             text="   "+song.name,
@@ -226,7 +227,7 @@ class Playlist(Treeview):
         return self.getSongById(self.getSongPlayingId())
 
 
-    def getAllSongs(self) -> List[Song]:
+    def getAllSongs(self) -> list[Song]:
         return self.__songs_all
 
     #___
@@ -255,7 +256,7 @@ class Playlist(Treeview):
             foreground=config.colors["TV_FG_PLAYING"])
 
         #Push to "self.__songs_previous_id" if it is the first song or it is not the previous song
-        if (not len(self.__songs_previous_id)) or (song_id!=self.__songs_previous_id[-1]):
+        if not len(self.__songs_previous_id) or song_id!=self.__songs_previous_id[-1]:
             self.__songs_previous_id.append(song_id)
 
 
@@ -371,8 +372,12 @@ class Playlist(Treeview):
 
     #___
 
-    def getStates(self) -> Tuple[float, bool, bool]:
-        return (mixer.music.get_volume(), self.__state_random, self.__state_loop)
+    def getStates(self) -> dict[float,bool,bool]:
+        return {
+            "volume": mixer.music.get_volume(),
+            "random": self.__state_random,
+            "loop": self.__state_loop
+        }
 
     #___
 
@@ -381,7 +386,8 @@ class Playlist(Treeview):
         self.delete(*self.get_children())
         for song in self.__songs_all:
             song.visible_inplaylist = song_name.lower() in song.name.lower()
-            if song.visible_inplaylist: self.__insertSongTV(song)
+            if song.visible_inplaylist:
+                self.__insertSongTV(song)
 
 
     def sortBy(self, col:str, reverse:bool):
@@ -399,7 +405,7 @@ class Playlist(Treeview):
 
 
 class LabelEditSong(Frame):
-    def __init__(self, playlist:Playlist, event, *args, **kwargs):
+    def __init__(self, playlist:Playlist, event:Event, *args, **kwargs):
 
         self.playlist = playlist
         self.playlist_handler = playlist.master.playlist_control.playlist_handler_set
@@ -476,7 +482,7 @@ class LabelEditSong(Frame):
 
     #______________________________________________________________________________________
 
-    def _destroyLabel(self, event=None):
+    def _destroyLabel(self, event:Event=None):
         #Do nothing if left click in LabelEditSong
         if event and str(event.widget).startswith(str(self)):
             return
@@ -497,7 +503,7 @@ class LabelEditSong(Frame):
         return self.playlist.getSongPlayingId() == self.song.id
 
 
-    def __colorItemTV(self) -> Tuple[str, str]:
+    def __colorItemTV(self) -> Tuple[str,str]:
         #Is the focused itemTV
         if self.playlist.focus() and int(self.playlist.focus())==self.song.id:
             return (config.colors["TV_BG_SELECT"], config.colors["TV_FG_SELECT"])

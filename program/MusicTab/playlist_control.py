@@ -6,7 +6,8 @@ from data import config, images as b64img
 from .song import Song
 
 import os, shutil
-from typing import Tuple
+
+from data.data_types import *
 
 #==================================================
 
@@ -95,7 +96,7 @@ class PlaylistControl(Frame):
         #___
 
         self.btn_sorttitle.set_img(1)
-        self.__btn_sort_active: Tuple[TkButtonImgHoverBg, str] = [self.btn_sorttitle, 1]
+        self.__btn_sort_active:List[TkButtonImgHoverBg,int] = [self.btn_sorttitle, 1]
 
     #__________________________________________________
 
@@ -192,7 +193,7 @@ class PlaylistControl(Frame):
 
 class PlaylistHandlerSet(Frame):
     def __init__(self, w:PlaylistControl, *args, **kwargs):
-        self.EMPTY_MENUBTN = _("Select Playlist")    #After defined _ by gettext
+        self.EMPTY_MENUBTN:str = _("Select Playlist")    #After defined _ by gettext
 
         self.playlist = w.playlist
         self.playlist_control = w

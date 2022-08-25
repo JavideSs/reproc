@@ -44,12 +44,12 @@ class Reproc(Tk):
     def onDelete(self):
         self.saveJson()
         #self.win7_features.releaseThumbBar()
+        self.destroy()
 
 
     def saveJson(self):
         self.tab_music.saveJson()
         config.save_user_config()
-        self.destroy()
 
 
     def setTheme(self):
@@ -66,6 +66,7 @@ class Reproc(Tk):
             languages=[config.general["language"]])
         language.install()
         _ = language.gettext
+        #reconfig windows
 
 
 #==================================================

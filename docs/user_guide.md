@@ -6,8 +6,9 @@ Reproc is a free-open Local Music Player multiplaylists written in python.
 ---
 
 # Running from source code
-Python must be installed
+Python must be installed.
 
+*From source code*
 ```
 # Clone project
 git clone https://github.com/JavideSs/reproc.git
@@ -19,6 +20,26 @@ pip install -r requirements.txt
 # Run reproc
 python reproc.py
 ```
+
+*From source code with pipenv virtual environment*
+```
+# Clone project
+git clone https://github.com/JavideSs/reproc.git
+cd reproc
+
+# Install pipenv if you not have ready
+pip install pipenv
+
+# Install dependencies
+pipenv install
+
+# Start pipenv environment
+pipenv shell
+
+# Run reproc
+python reproc.py
+```
+
 ---
 
 # Reproc user guide
@@ -51,7 +72,7 @@ It is sensitive to the mouse movement. When the mouse is passed over a song, it 
 
 ![Screenshot](images/playlist_focus.gif?raw=true "Playlist focus")
 
-Right clicking on a song, you can rename it, delete it or copy it to another playlist that has been imported to reproc.  
+Right clicking on a song, you can rename it, delete it or copy it to another playlist that has been imported in reproc.  
 These actions will have a direct consequence on the disk.
 
 ![Screenshot](images/playlist-song_control.jpg?raw=true "Playlist-Song control")
@@ -94,11 +115,13 @@ These actions will have a direct consequence on the disk.
 - With the **RIGHT/LEFT ARROWS KEYS** we can move forward/backward respectively 5s of the current song
 - With the **UP/DOWN ARROWS KEYS** we can move through the playlist.
 
-## Win32 Thumbnail toolbar
-The application in the taskbar has buttons on the thumbnail to pause, continue, play previous or next song.  
+## Win32 Features
+
+### Thumbnail toolbar
+The application in the taskbar has buttons on the thumbnail to pause, continue or play previous or next song.  
 This feature is present in Windows systems as of Windows 7. 
 
-![Screenshot](images/thumbbar.jpg?raw=true "Thumb Bar")
+![Screenshot](images/thumbbar.jpg?raw=true "ThumbBar")
 
 ## Audio formats
 Unfortunately the pygame sld2 mixer interface for python only supports ogg for all platforms, and also mp3 for windows.  
@@ -122,4 +145,4 @@ Some theme colors can also be modified directly in this file. For a complete cus
 
 Author:  
 Javier Mellado Sánchez  
-2020-2021
+2020-2022

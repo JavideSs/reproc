@@ -2,7 +2,8 @@ from tkinter import Button
 
 from abc import ABC, abstractmethod
 
-#Classes to add style to a button
+from data.data_types import *
+
 #==================================================
 
 class TkButtonText(ABC, Button):

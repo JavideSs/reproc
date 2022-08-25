@@ -7,6 +7,8 @@ from .song_control import SongControl
 
 from data import config
 
+from data.data_types import *
+
 #==================================================
 
 class MusicTab(Frame):
@@ -44,7 +46,7 @@ class MusicTab(Frame):
 
         #___
 
-        #SetJson
+        #SetJson config
         #Other sets have been updated when when its respective widget is initialized or when the playlist is set
         self.playlist_control.playlist_handler_set.setPlaylist(config.general["playlist"])
 
@@ -68,23 +70,17 @@ class MusicTab(Frame):
         #Update song every second
         w.after(1000, self._updateTimeLoop)
 
+        #Do not use "if self.playlist.isSongPlaying(): ..." because the song may have finished between seconds
+        self.__is_song_playing_in_setp = False
+
     #__________________________________________________
 
     def saveJson(self):
         #Other saves are updated when their associated event is called
-        states_to_save = self.playlist.getStates()
-        config.general["volume"] = states_to_save[0]
-        config.general["random"] = states_to_save[1]
-        config.general["loop"] = states_to_save[2]
-
+        config.general.update(self.playlist.getStates())
     #___
 
-    '''
-    Intermediary functions before the execution of the corresponding function play
-    The corresponding widgets are updated
-    '''
-
-    def _play(self, func_play):
+    def _play(self, func_play:Callable):
         is_song_new = func_play()
 
         if is_song_new:
@@ -93,11 +89,15 @@ class MusicTab(Frame):
             self.song_control.timeline.setNewSong(song_playing)
 
         if self.playlist.isSongPlaying():
+            self.__is_song_playing_in_setp = True
+
             self.song_control.btn_playpause.set_img(1)
             self.song_control.artwork.playGif()
             #self.w.win7_features.updateThumbBar(1)
 
         elif self.playlist.isSongLoad():
+            self.__is_song_playing_in_setp = False
+
             self.song_control.btn_playpause.set_img(0)
             self.song_control.artwork.stopGif()
             #self.w.win7_features.updateThumbBar(0)
@@ -110,7 +110,7 @@ class MusicTab(Frame):
             self.song_control.timeline.setTime(time_new)
 
 
-    def _moveTime(self, time):
+    def _moveTime(self, time:int):
         if self.playlist.isSongLoad():
             song_playing = self.playlist.getSongPlaying()
             time_new = self.song_control.timeline.getTime(song_playing) + time
@@ -126,13 +126,12 @@ class MusicTab(Frame):
     #___
 
     def _updateTimeLoop(self):
-        #Do not use "if self.playlist.isSongPlaying(): ..." because the song may have finished between seconds
-        #"if self.song_control.artwork.isPlayingGif(): ..." is safer
-        if self.song_control.artwork.isPlayingGif():
+        if self.__is_song_playing_in_setp:
             song_playing = self.playlist.getSongPlaying()
-            time_new = self.song_control.timeline.getTime(song_playing) + 1
 
             if song_playing is not None:
+                time_new = self.song_control.timeline.getTime(song_playing) + 1
+
                 if time_new < song_playing.time:
                     self.song_control.timeline.setTime(time_new)
                 else:
