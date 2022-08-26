@@ -1,6 +1,6 @@
 from tkinter import Tk
 from tkinter.ttk import Style
-#from customTk import Win7Features
+from customTk import WinFeatures
 
 from data import config, images as b64img
 from data.images.utilities import b64ToTk
@@ -30,20 +30,19 @@ class Reproc(Tk):
         self.tab_music = MusicTab(self)
         self.tab_music.pack()
 
-        '''
-        self.win7_features = Win7Features(self)
-        self.win7_features.createThumbBar(
+        #Functions valid only for platforms that support it
+        self.win_features = WinFeatures(self)
+        self.win_features.createThumbBar(
             self.tab_music.fprevious,
             self.tab_music.fplaypause,
             self.tab_music.fnext,
         )
-        '''
 
     #__________________________________________________
 
     def onDelete(self):
         self.saveJson()
-        #self.win7_features.releaseThumbBar()
+        self.win_features.releaseThumbBar()
         self.destroy()
 
 

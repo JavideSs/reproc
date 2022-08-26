@@ -1,0 +1,2 @@
+I don't know how to handle the hbmp format :p
+16(96) seems to be the common size

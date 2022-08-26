@@ -93,14 +93,14 @@ class MusicTab(Frame):
 
             self.song_control.btn_playpause.set_img(1)
             self.song_control.artwork.playGif()
-            #self.w.win7_features.updateThumbBar(1)
+            self.w.win_features.updateThumbBar(is_song_playing=True)
 
         elif self.playlist.isSongLoad():
             self.__is_song_playing_in_setp = False
 
             self.song_control.btn_playpause.set_img(0)
             self.song_control.artwork.stopGif()
-            #self.w.win7_features.updateThumbBar(0)
+            self.w.win_features.updateThumbBar(is_song_playing=False)
 
 
     def _setTime(self, _event):

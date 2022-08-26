@@ -1,14 +1,14 @@
 #include "Python.h"
 #include "ShObjIdl_core.h"  //ITaskbarList3
-#include "strsafe.h"        //StringCchCopyW()
+#include "strsafe.h"        //StringCchCopy()
 
 #include <iostream>
 
-#define IDTB_BTN_PREVIOUS   40001
-#define IDTB_BTN_PLAYPAUSE  40002
-#define IDTB_BTN_NEXT       40003
+#define IDTB_BTN_PREVIOUS   0001
+#define IDTB_BTN_PLAYPAUSE  0002
+#define IDTB_BTN_NEXT       0003
 
-#define RELPATH "customTk\\CThumbBar\\"
+#define RELPATH L"customTk\\win_features\\ThumbBar\\images\\"
 #define IMGPATH_BTN96  RELPATH"TBbtns96.bmp"
 #define IMGPATH_BTN120 RELPATH"TBbtns120.bmp"
 #define IMGPATH_BTN144 RELPATH"TBbtns144.bmp"
@@ -30,7 +30,7 @@ PyObject* pFuncs[4];
 HIMAGELIST himl;
 
 struct BitMap{
-    LPCSTR pbmp;
+    LPCWSTR pbmp;
     int cx;
 };
 
@@ -85,6 +85,7 @@ HRESULT CreateThumbnailToolbar(HWND hWnd){
         CLSCTX_INPROC_SERVER,
         IID_PPV_ARGS(&pTaskbarList)
     );
+
     if (!SUCCEEDED(hr))
         return hr;
 
@@ -112,21 +113,21 @@ HRESULT CreateThumbnailToolbar(HWND hWnd){
     btns[0].dwFlags = THBF_ENABLED;
     btns[0].iId = IDTB_BTN_PREVIOUS;
     btns[0].iBitmap = 0;
-    StringCchCopyW(btns[0].szTip, ARRAYSIZE(btns[0].szTip), HOVERTEXT_BTN_PREVIOUS);
+    StringCchCopy(btns[0].szTip, ARRAYSIZE(btns[0].szTip), HOVERTEXT_BTN_PREVIOUS);
 
     //Play Btn
     btns[1].dwMask = THB_BITMAP | THB_TOOLTIP | THB_FLAGS;
     btns[1].dwFlags = THBF_ENABLED;
     btns[1].iId = IDTB_BTN_PLAYPAUSE;
     btns[1].iBitmap = 1;
-    StringCchCopyW(btns[1].szTip, ARRAYSIZE(btns[1].szTip), HOVERTEXT_BTN_PLAY);
+    StringCchCopy(btns[1].szTip, ARRAYSIZE(btns[1].szTip), HOVERTEXT_BTN_PLAY);
 
     //Next Btn
     btns[2].dwMask = THB_BITMAP | THB_TOOLTIP | THB_FLAGS;
     btns[2].dwFlags = THBF_ENABLED;
     btns[2].iId = IDTB_BTN_NEXT;
     btns[2].iBitmap = 3;
-    StringCchCopyW(btns[2].szTip, ARRAYSIZE(btns[2].szTip), HOVERTEXT_BTN_NEXT);
+    StringCchCopy(btns[2].szTip, ARRAYSIZE(btns[2].szTip), HOVERTEXT_BTN_NEXT);
 
     hr = pTaskbarList->ThumbBarAddButtons(hWnd, btns_n, btns);
 
@@ -138,12 +139,12 @@ HRESULT UpdateThumbnailToolbar(int is_song_playing){
     if (is_song_playing){
         //Pause Btn
         btns[1].iBitmap = 2;
-        StringCchCopyW(btns[1].szTip, ARRAYSIZE(btns[1].szTip), HOVERTEXT_BTN_PAUSE);
+        StringCchCopy(btns[1].szTip, ARRAYSIZE(btns[1].szTip), HOVERTEXT_BTN_PAUSE);
     }
     else{
         //Play Btn
         btns[1].iBitmap = 1;
-        StringCchCopyW(btns[1].szTip, ARRAYSIZE(btns[1].szTip), HOVERTEXT_BTN_PLAY);
+        StringCchCopy(btns[1].szTip, ARRAYSIZE(btns[1].szTip), HOVERTEXT_BTN_PLAY);
     }
 
     HRESULT hr = pTaskbarList->ThumbBarUpdateButtons(hWnd, btns_n, btns);
@@ -155,6 +156,7 @@ HRESULT UpdateThumbnailToolbar(int is_song_playing){
 
 //Processes the message sent when a button is clicked
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam){
+
     switch (message){
         case WM_COMMAND:{
             PyGILState_STATE d_gstate = PyGILState_Ensure();
@@ -196,9 +198,16 @@ static PyObject* create(PyObject* self, PyObject* args){
         Py_RETURN_NONE;
     }
 
-    wndproc_tk = (WNDPROC)GetWindowLong(hWnd, GWL_WNDPROC);
-    CreateThumbnailToolbar(hWnd);
-    SetWindowLongW(hWnd, GWL_WNDPROC, (LONG)WndProc);
+    //https://stackoverflow.com/questions/51771072/gwl-wndproc-undeclared
+    #ifdef _WIN64
+        wndproc_tk = (WNDPROC)GetWindowLongPtr(hWnd, GWLP_WNDPROC);
+        CreateThumbnailToolbar(hWnd);
+        SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR)WndProc);
+    #else
+        wndproc_tk = (WNDPROC)GetWindowLong(hWnd, GWL_WNDPROC);
+        CreateThumbnailToolbar(hWnd);
+        SetWindowLong(hWnd, GWL_WNDPROC, (LONG)WndProc);
+    #endif
 
     Py_RETURN_NONE;
 }
@@ -239,6 +248,12 @@ static struct PyModuleDef struct_module = {
     module_methods
 };
 
-PyMODINIT_FUNC PyInit_ThumbBar(void) {
-    return PyModule_Create(&struct_module);
-}
+#ifdef _WIN64
+    PyMODINIT_FUNC PyInit_ThumbBar_x64(void) {
+        return PyModule_Create(&struct_module);
+    }
+#else
+    PyMODINIT_FUNC PyInit_ThumbBar_x86(void) {
+        return PyModule_Create(&struct_module);
+    }
+#endif
