@@ -1,6 +1,8 @@
 from tkinter import Canvas
 
-from PIL import Image, ImageTk
+from data.images.utilities import PILToTk
+
+from PIL import Image, ImageSequence, ImageTk
 
 from data.data_types import *
 
@@ -9,7 +11,7 @@ from data.data_types import *
 #Class to add and control a transparent gif in tkinter
 #https://stackoverflow.com/questions/20370864/no-transparency-in-animated-gif-with-tkinter
 class TkCanvasGif(Canvas):
-    def __init__(self, w, gif:PILImage, size:Tuple[int,int], bg:str=None, *args, **kwargs):
+    def __init__(self, w, gif:PILImage, size:tuple, bg:str=None, *args, **kwargs):
 
         super().__init__(w,
             width=size[0], height=size[1],
@@ -17,23 +19,8 @@ class TkCanvasGif(Canvas):
             highlightthickness=0,
             *args, **kwargs)
 
-        mode = "RGBA" if not bg else "RGB"
-
-        gif_seq = [gif.copy()]
-        for _ in range(getattr(gif, "n_frames", 1)-1):
-            gif.seek(len(gif_seq))
-            gif_seq.append(gif.copy())
-
-        self.gif_seq_tk = [ImageTk.PhotoImage(gif_seq[0].convert(mode))]
-
-        lut = [1]*256
-        lut[gif.info["transparency"]] = 0
-
-        temp = gif_seq[0]
-        for img in gif_seq[1:]:
-            mask = img.point(lut, "1")
-            temp.paste(img, None, mask)
-            self.gif_seq_tk.append(ImageTk.PhotoImage(temp.convert(mode)))
+        func = lambda frame: PILToTk(frame.convert(mode="RGBA" if not bg else "RGB"))
+        self.frames = ImageSequence.all_frames(gif, func=func)
 
         self.__i_seq = 0
         self.__duration = gif.info["duration"]
@@ -42,7 +29,7 @@ class TkCanvasGif(Canvas):
 
 
     def setGif(self):
-        self.canvas_gif = self.create_image(0,0, image=self.gif_seq_tk[0], anchor="nw")
+        self.canvas_gif = self.create_image(0,0, image=self.frames[0], anchor="nw")
 
 
     def isPlayingGif(self) -> bool:
@@ -50,10 +37,10 @@ class TkCanvasGif(Canvas):
 
 
     def __playGifLoop(self):
-        self.itemconfig(self.canvas_gif, image=self.gif_seq_tk[self.__i_seq])
+        self.itemconfig(self.canvas_gif, image=self.frames[self.__i_seq])
 
         self.__i_seq += 1
-        if self.__i_seq == len(self.gif_seq_tk):
+        if self.__i_seq == len(self.frames):
             self.__i_seq = 0
 
         self.__cancel_id = self.after(self.__duration, self.__playGifLoop)

@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pillow = "==8.4.0"
+pillow = "==9.2.0"
 pygame = "==2.1.2"
 tinytag = "==1.8.1"
 
