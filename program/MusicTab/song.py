@@ -9,9 +9,16 @@ from data.data_types import *
 #==================================================
 
 class Song():
+    NONE_SONG = ""
+    NONE_ID = -1
+
     next_id = 0
 
     def __init__(self, song_path:str):
+        if song_path == Song.NONE_SONG:
+            self.id = Song.NONE_ID
+            return
+
         self.id = Song.next_id
         Song.next_id += 1
 

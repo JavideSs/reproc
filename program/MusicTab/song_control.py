@@ -235,7 +235,7 @@ class Timeline(Frame):
 
     '''
     Scale time to Song time
-    scale.time -> 100 | x -> song.time | => x = time*100/song.time
+    scale.time -> 100 | x -> song.time | => x = scale.time*song.time/100
     '''
     def getTime(self, song:Song=None) -> int:
         song = self.song_playing if song is None else song

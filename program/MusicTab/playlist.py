@@ -22,7 +22,6 @@ COLUMN_DURATION_WIDTH = 50
 ROW_HEIGHT = 25
 N_ROWS = 14
 IMGS_SIZE = (ROW_HEIGHT,ROW_HEIGHT)
-NONE_ID = -1
 
 class Playlist(Treeview):
     def __init__(self, w, *args, **kwargs):
@@ -80,23 +79,23 @@ class Playlist(Treeview):
 
         self.__is_load = False
 
-        self.__song_playing_id = NONE_ID
-        self.__song_hover_id = NONE_ID
+        self.__song_playing = Song(Song.NONE_SONG)
+        self.__song_hover_id = Song.NONE_ID
 
-        self.__songs_all:List[Song,...] = []
-        self.__songs_previous_id:List[int,...] = []
+        self.__songs_all:List[Song] = []
+        self.__songs_previous_id:List[int] = []
 
     #__________________________________________________
 
     def _motionItemLeave(self, _event):
         #"self.__song_hover_id" may have no value when the TV is not completely full
-        #"self.__song_playing_id" is not modified
-        if self.__song_hover_id!=NONE_ID and self.__song_hover_id!=self.__song_playing_id:
+        #"self.__song_playing.id" is not modified
+        if self.__song_hover_id!=Song.NONE_ID and self.__song_hover_id!=self.__song_playing.id:
             self.tag_configure(self.__song_hover_id,
                 image=self.imgs["none"],
                 background=config.colors["TV_BG"],
                 foreground=config.colors["TV_FG"])
-            self.__song_hover_id = NONE_ID
+            self.__song_hover_id = Song.NONE_ID
 
 
     def _motionItem(self, event:Event):
@@ -121,8 +120,8 @@ class Playlist(Treeview):
         #If motion to another itemTV
         if item_hover_id != self.__song_hover_id:
             #Reset previous hover itemTV
-            if self.__song_hover_id != NONE_ID:
-                if self.__song_hover_id != self.__song_playing_id:
+            if self.__song_hover_id != Song.NONE_ID:
+                if self.__song_hover_id != self.__song_playing.id:
                     self.tag_configure(self.__song_hover_id,
                         image=self.imgs["none"],
                         background=config.colors["TV_BG"],
@@ -131,7 +130,7 @@ class Playlist(Treeview):
                     self.tag_configure(self.__song_hover_id,
                         background=config.colors["TV_BG"])
             #Config new hover itemTV
-            if item_hover_id != self.__song_playing_id:
+            if item_hover_id != self.__song_playing.id:
                 self.tag_configure(item_hover_id,
                     image=self.imgs["play"],
                     background=config.colors["TV_BG_HOVER"],
@@ -142,26 +141,25 @@ class Playlist(Treeview):
     #___
 
     def setPlaylist(self, playlist_path:str):
-        with os.scandir(playlist_path) as it_folder:
-            self.delPlaylist()
+        self.delPlaylist()
 
-            for file in it_folder:
-                if file.is_file and file.name.endswith(config.SUPPORTED_SONG_FORMATS):
-                    song = Song(file.path)
-                    self.__songs_all.append(song)
-                    self.__insertSongTV(song)
+        for file in os.scandir(playlist_path):
+            if file.is_file and file.name.endswith(config.SUPPORTED_SONG_FORMATS):
+                song = Song(file.path)
+                self.__songs_all.append(song)
+                self.__insertSongTV(song)
 
 
-    def delPlaylist(self):
+    def delPlaylist(self, unload=False):
         self.__songs_all.clear()
         self.__songs_previous_id.clear()
         self.delete(*self.get_children())
 
-        if self.isSongLoad():
+        if unload and self.isSongLoad():
             mixer.music.unload()
             mixer.music.stop()
             self.__is_load = False
-            self.__song_playing_id = NONE_ID
+            self.__song_playing.id = Song.NONE_ID
 
     #___
 
@@ -174,7 +172,7 @@ class Playlist(Treeview):
             iid=song.id, tag=song.id)
 
         #Magically the previous state if it was filtered is preserved
-        if song.id != self.__song_playing_id:
+        if song.id != self.__song_playing.id:
             self.tag_configure(song.id,
                 image=self.imgs["none"])
 
@@ -212,6 +210,10 @@ class Playlist(Treeview):
         return mixer.music.get_busy()
 
 
+    def isSongList(self, song:Song) -> bool:
+        return self.getSongById(song) is not None and self.getSongById(song).visible_inplaylist
+
+
     def getSongById(self, song_id:int) -> Song:
         for song in self.__songs_all:
             if song.id == song_id:
@@ -219,15 +221,11 @@ class Playlist(Treeview):
         return None
 
 
-    def getSongPlayingId(self) -> int:
-        return self.__song_playing_id
-
-
     def getSongPlaying(self) -> Song:
-        return self.getSongById(self.getSongPlayingId())
+        return self.__song_playing
 
 
-    def getAllSongs(self) -> list[Song]:
+    def getAllSongs(self) -> List[Song]:
         return self.__songs_all
 
     #___
@@ -235,7 +233,7 @@ class Playlist(Treeview):
     def playById(self, song_id:int):
         #Reset previous playing itemTV
         if len(self.__songs_previous_id):
-            self.tag_configure(self.__song_playing_id,
+            self.tag_configure(self.__song_playing.id,
                 image=self.imgs["none"],
                 foreground=config.colors["TV_FG"])
 
@@ -250,8 +248,8 @@ class Playlist(Treeview):
         mixer.music.play()
         self.__is_load = True
 
-        self.__song_playing_id = song_id
-        self.tag_configure(self.__song_playing_id,
+        self.__song_playing = song
+        self.tag_configure(self.__song_playing.id,
             image=self.imgs["playing"],
             foreground=config.colors["TV_FG_PLAYING"])
 
@@ -263,7 +261,7 @@ class Playlist(Treeview):
     #Play the selected itemTV
     def directPlay(self) -> bool:
         #If song is playing, play/pause itemTV
-        if int(self.selection()[0]) == self.__song_playing_id:
+        if int(self.selection()[0]) == self.__song_playing.id:
             self.playpause()
             return False
 
@@ -277,7 +275,7 @@ class Playlist(Treeview):
         #Play to pause
         if self.isSongPlaying():
             mixer.music.pause()
-            self.tag_configure(self.__song_playing_id,
+            self.tag_configure(self.__song_playing.id,
                 image=self.imgs["play"])
             return False
 
@@ -285,7 +283,7 @@ class Playlist(Treeview):
             #Pause to play
             if self.isSongLoad():
                 mixer.music.unpause()
-                self.tag_configure(self.__song_playing_id,
+                self.tag_configure(self.__song_playing.id,
                     image=self.imgs["playing"])
                 return False
 
@@ -307,8 +305,8 @@ class Playlist(Treeview):
             self.playById(choice([song for song in self.__songs_all if song.visible_inplaylist]).id)
 
         #Now and next is in TV
-        elif self.isSongLoad() and self.getSongById(self.__song_playing_id).visible_inplaylist and self.next(self.__song_playing_id):
-            self.playById(int(self.next(self.__song_playing_id)))
+        elif self.isSongLoad() and self.isSongList(self.__song_playing.id) and self.next(self.__song_playing.id):
+            self.playById(int(self.next(self.__song_playing.id)))
 
         #Any in TV
         elif len(self.get_children()):
@@ -319,9 +317,9 @@ class Playlist(Treeview):
             self.__is_load = False
             return False
 
-        self.selection_set(self.__song_playing_id)
-        self.focus(self.__song_playing_id)
-        self.see(self.__song_playing_id)
+        self.selection_set(self.__song_playing.id)
+        self.focus(self.__song_playing.id)
+        self.see(self.__song_playing.id)
         return True
 
 
@@ -341,9 +339,9 @@ class Playlist(Treeview):
                 mixer.music.rewind()
 
             if self.exists(self.__songs_previous_id[-1]):
-                self.selection_set(self.__song_playing_id)
-                self.focus(self.__song_playing_id)
-                self.see(self.__song_playing_id)
+                self.selection_set(self.__song_playing.id)
+                self.focus(self.__song_playing.id)
+                self.see(self.__song_playing.id)
 
             return True
         else: return False
@@ -372,7 +370,7 @@ class Playlist(Treeview):
 
     #___
 
-    def getStates(self) -> dict[float,bool,bool]:
+    def getStates(self) -> Dict[str,Any]:
         return {
             "volume": mixer.music.get_volume(),
             "random": self.__state_random,
@@ -500,7 +498,7 @@ class LabelEditSong(Frame):
     #___
 
     def __isTheSongPlaying(self) -> bool:
-        return self.playlist.getSongPlayingId() == self.song.id
+        return self.playlist.getSongPlaying().id == self.song.id
 
 
     def __colorItemTV(self) -> Tuple[str,str]:

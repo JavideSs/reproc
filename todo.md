@@ -2,7 +2,6 @@
 
 ## Future
 
-- Don't unload song when changing playlist.
 - Prevent "(Not Responding)" when loading a playlist.
 - Linux support.
 - Underline characters in song titles when filtering playlist.

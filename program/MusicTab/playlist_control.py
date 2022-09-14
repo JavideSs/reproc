@@ -252,7 +252,8 @@ class PlaylistHandlerSet(Frame):
             self.menubtn["text"] = self.EMPTY_MENUBTN
             return
 
-        playlist_path = config.user_config["Playlists"][playlist]["path"]
+        playlist_dict = config.user_config["Playlists"][playlist]
+        playlist_path = playlist_dict["path"]
 
         if not os.path.exists(playlist_path):
             messagebox.showerror(_("Load failed"), _("The folder does not to exist"))
@@ -260,7 +261,7 @@ class PlaylistHandlerSet(Frame):
             return
 
         config.general["playlist"] = playlist
-        config.playlist = config.user_config["Playlists"][playlist]
+        config.playlist = playlist_dict
 
         self.menubtn["text"] = playlist
         self.playlist.setPlaylist(playlist_path)
@@ -268,14 +269,14 @@ class PlaylistHandlerSet(Frame):
         self.playlist_control.setSearch(config.playlist["filter"])
 
 
-    def delPlaylist(self, playlist:str, in_tv:bool=True):
+    def delPlaylist(self, playlist:str, in_tv:bool=True, unload:bool=False):
         config.user_config["Playlists"].pop(playlist)
         self.menu.delete(playlist)
 
         if in_tv:
             config.general["playlist"] = ""
             self.menubtn["text"] = self.EMPTY_MENUBTN
-            self.playlist.delPlaylist()
+            self.playlist.delPlaylist(unload=unload)
 
 
     def renamePlaylist(self, playlist_new:str, playlist_new_path:str):
@@ -393,7 +394,7 @@ class TopLevelPlaylistEdit(TkPopup):
 
         if state_delete is None: return
 
-        self.playlist_handler_set.delPlaylist(config.general["playlist"])
+        self.playlist_handler_set.delPlaylist(config.general["playlist"], unload=True)
 
         if state_delete:
             shutil.rmtree(config.playlist["path"])

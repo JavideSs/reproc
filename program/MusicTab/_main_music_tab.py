@@ -128,13 +128,11 @@ class MusicTab(Frame):
     def _updateTimeLoop(self):
         if self.__is_song_playing_in_setp:
             song_playing = self.playlist.getSongPlaying()
+            time_new = self.song_control.timeline.getTime(song_playing) + 1
 
-            if song_playing is not None:
-                time_new = self.song_control.timeline.getTime(song_playing) + 1
-
-                if time_new < song_playing.time:
-                    self.song_control.timeline.setTime(time_new)
-                else:
-                    self.fnext()
+            if time_new < song_playing.time:
+                self.song_control.timeline.setTime(time_new)
+            else:
+                self.fnext()
 
         self.w.after(1000, self._updateTimeLoop)
