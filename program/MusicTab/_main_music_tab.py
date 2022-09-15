@@ -61,11 +61,12 @@ class MusicTab(Frame):
         self.song_control.timeline.scale_time.bind("<ButtonRelease-1>", self._setTime)
 
         #When these keys are pressed and there is no focus on an entry
-        w.bind_all("<space>", lambda event: self.fplaypause() if not str(event.widget).endswith("entry") else None)
-        w.bind_all("<Right>", lambda event: self._moveTime(5) if not str(event.widget).endswith("entry") else None)
-        w.bind_all("<Left>", lambda event: self._moveTime(-5) if not str(event.widget).endswith("entry") else None)
-        #Fix: Default bind of ttk.treeview focuses on the previous itemTV clicked directly
-        self.playlist.bind("<Right>", lambda event: self._moveTime(5) if not str(event.widget).endswith("entry") else None)
+        is_not_entry = lambda event: not str(event.widget).endswith("entry")
+        w.bind_all("<space>", lambda event: self.fplaypause() if is_not_entry(event) else None)
+        w.bind_all("<Control-Right>", lambda event: self.fnext() if is_not_entry(event) else None)
+        w.bind_all("<Control-Left>", lambda event: self.fprevious() if is_not_entry(event) else None)
+        w.bind_all("<Right>", lambda event: self._moveTime(5) if is_not_entry(event) else None)
+        w.bind_all("<Left>", lambda event: self._moveTime(-5) if is_not_entry(event) else None)
 
         #Update song every second
         w.after(1000, self._updateTimeLoop)
