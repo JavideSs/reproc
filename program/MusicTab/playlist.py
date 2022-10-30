@@ -140,14 +140,16 @@ class Playlist(Treeview):
 
     #___
 
-    def setPlaylist(self, playlist_path:str):
+    def setPlaylist(self, playlist_path:str, filter:str, sortby:Tuple[str,bool]):
         self.delPlaylist()
 
         for file in os.scandir(playlist_path):
             if file.is_file and file.name.endswith(config.SUPPORTED_SONG_FORMATS):
-                song = Song(file.path)
-                self.__songs_all.append(song)
-                self.__insertSongTV(song)
+                self.__songs_all.append(Song(file.path))
+
+        self.filterName(filter, refresh=False)
+        self.sortBy(*sortby, refresh=False)
+        self.refresh()
 
 
     def delPlaylist(self, unload=False):
@@ -379,24 +381,28 @@ class Playlist(Treeview):
 
     #___
 
-    def filterName(self, song_name:str):
-        #Restart TV depending on visibility
+    def filterName(self, song_name:str, refresh=True):
+        for song in self.__songs_all:
+            song.visible = song_name.lower() in song.name.lower()
+
+        if refresh: self.refresh()
+
+
+    def sortBy(self, atr:str, reverse:bool, refresh=True):
+        if atr == "title":
+            self.__songs_all.sort(reverse=reverse, key=lambda song: strxfrm(song.name))
+        else:
+            self.__songs_all.sort(reverse=reverse, key=lambda song: attrgetter(atr)(song))
+
+        if refresh: self.refresh()
+
+
+    def refresh(self):
         self.delete(*self.get_children())
         for song in self.__songs_all:
-            song.visible_inplaylist = song_name.lower() in song.name.lower()
-            if song.visible_inplaylist:
+            if song.visible:
                 self.__insertSongTV(song)
-
-
-    def sortBy(self, col:str, reverse:bool):
-        if col == "title":  self.__songs_all.sort(reverse=reverse, key=lambda song: strxfrm(song.name))
-        else:               self.__songs_all.sort(reverse=reverse, key=lambda song: attrgetter(col)(song))
-
-        #Restart TV
-        self.delete(*self.get_children())
-        for song in self.__songs_all:
-            if song.visible_inplaylist:
-                self.__insertSongTV(song)
+                song.visible_inplaylist = True
 
 
 #==================================================

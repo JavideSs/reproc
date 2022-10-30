@@ -1,5 +1,5 @@
 from tkinter import PhotoImage, font, DoubleVar, StringVar, Scale as TkScale
-from tkinter.ttk import Frame, Separator, Label, Scale
+from tkinter.ttk import Frame, Label, Separator, Scale
 from customTk import TkButtonImgHoverNone, TkButtonImgHoverImg, TkCanvasGif
 
 from data import config, images as b64img

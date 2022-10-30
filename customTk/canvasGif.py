@@ -2,7 +2,7 @@ from tkinter import Canvas
 
 from data.images.utilities import PILToTk
 
-from PIL import Image, ImageSequence, ImageTk
+from PIL import ImageSequence
 
 from data.data_types import *
 

@@ -1,5 +1,5 @@
 from tkinter import Entry
-from tkinter.ttk import Frame, Separator, Label
+from tkinter.ttk import Frame, Label, Separator
 
 from data.data_types import *
 

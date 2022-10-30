@@ -6,6 +6,7 @@ from data import config, images as b64img
 from .song import Song
 
 import os, shutil
+from threading import Thread
 
 from data.data_types import *
 
@@ -38,7 +39,7 @@ class PlaylistControl(Frame):
 
         #When the text is changed, the search function will be called
         self.state_entry_search = StringVar()
-        self.state_entry_search.trace('w', self._search)
+        self.state_entry_search.trace_add("write", self._search)
 
         self.entry_search = Entry(self,
             width=15,
@@ -146,7 +147,7 @@ class PlaylistControl(Frame):
             if btn == self.btn_sorttitle: btn.set_img(1)    #Set title btn to up, the others are set automatically
             self.__btn_sort_active = [btn, 1]               #Status is updated
             self.playlist.sortBy(atr, False)
-            config.playlist["orderby"] = [atr, 1]
+            config.playlist["sortby"] = [atr, False]
 
         #If click on the same sort btn
         else:
@@ -155,37 +156,42 @@ class PlaylistControl(Frame):
                 if btn == self.btn_sorttitle: btn.set_img(2)      #Set title btn to down, the others are set automatically
                 self.__btn_sort_active[1] = 2                     #Status is updated
                 self.playlist.sortBy(atr, True)
-                config.playlist["orderby"] = [atr, 2]
+                config.playlist["sortby"] = [atr, True]
 
             #If the btn was in down
             elif self.__btn_sort_active[1] == 2:
                 self.btn_sorttitle.set_img(1)                     #Set title btn to down, the others are set automatically
                 self.__btn_sort_active = [self.btn_sorttitle, 1]  #Status is updated
                 self.playlist.sortBy("title", False)
-                config.playlist["orderby"] = ["title", 1]
+                config.playlist["sortby"] = ["title", False]
 
+    def sortPlaylistForcedStates(self, atr:str, reverse:bool):
+        sort = 1+int(reverse)  #1 if reverse==False | 2 if reverse==True
 
-    def sortPlaylistForced(self, atr:str, order:int):
         if atr == "date":
-            self.btn_sortdate.set_img(order)
+            self.btn_sortdate.set_img(sort)
             self.btn_sorttitle.set_img(0)
             self.btn_sorttime.set_img(0)
             self.__btn_sort_active[0] = self.btn_sortdate
 
         elif atr == "time":
-            self.btn_sorttime.set_img(order)
+            self.btn_sorttime.set_img(sort)
             self.btn_sorttitle.set_img(0)
             self.btn_sortdate.set_img(0)
             self.__btn_sort_active[0] = self.btn_sorttime
 
         else:
-            self.btn_sorttitle.set_img(order)
+            self.btn_sorttitle.set_img(sort)
             self.btn_sortdate.set_img(0)
             self.btn_sorttime.set_img(0)
             self.__btn_sort_active[0] = self.btn_sorttitle
 
-        self.__btn_sort_active[1] = order
-        self.playlist.sortBy(atr, order-1)  #0(False) if order==1 | 1(True) if order==2
+        self.__btn_sort_active[1] = sort
+
+
+    def sortPlaylistForced(self, atr:str, reverse:bool):
+        self.sortPlaylistForcedStates(atr, reverse)
+        self.playlist.sortBy(atr, reverse)
 
 
 #==================================================
@@ -234,13 +240,29 @@ class PlaylistHandlerSet(Frame):
         if playlist not in config.user_config["Playlists"]:
             config.user_config["Playlists"][playlist] = {
                 "path":os.path.normcase(folder),
-                "orderby":["title",1],
+                "sortby":["title",False],
                 "filter":""}
 
             self.menu.add_command(label=playlist, command=lambda: self.setPlaylist(playlist))
 
         self.setPlaylist(playlist)
 
+    def __setPlaylist(self, playlist:str, playlist_path:str):
+        '''
+        self.__allsongs is still updating, prevent editing it
+        '''
+        def config_state_widget(widget, state):
+            for child in widget.children.values():
+                try: child.configure(state=state)
+                except: pass
+
+        self.menubtn["text"] = playlist
+        self.playlist_control.setSearch(config.playlist["filter"])  #No songs yet, write event has effect on nothing
+        self.playlist_control.sortPlaylistForcedStates(*config.playlist["sortby"])
+
+        config_state_widget(self.playlist_control, "disable")
+        self.playlist.setPlaylist(playlist_path, config.playlist["filter"], config.playlist["sortby"])
+        config_state_widget(self.playlist_control, "normal")
 
     def setPlaylist(self, playlist:str):
         '''
@@ -263,10 +285,11 @@ class PlaylistHandlerSet(Frame):
         config.general["playlist"] = playlist
         config.playlist = playlist_dict
 
-        self.menubtn["text"] = playlist
-        self.playlist.setPlaylist(playlist_path)
-        self.playlist_control.sortPlaylistForced(config.playlist["orderby"][0], config.playlist["orderby"][1])
-        self.playlist_control.setSearch(config.playlist["filter"])
+        Thread(
+            target=self.__setPlaylist,
+            args=(playlist, playlist_path),
+            daemon=True
+        ).start()
 
 
     def delPlaylist(self, playlist:str, in_tv:bool=True, unload:bool=False):
@@ -304,8 +327,9 @@ class TopLevelPlaylistEdit(TkPopup):
         self.playlist_handler_set = w.playlist_handler_set
 
         super().__init__(w,
-            title="Playlist Control Panel",
+            coord=(100,150),
             geometry="200x205",
+            title="Playlist Control Panel",
             bg_bar=config.colors["BG_WIDGET_GREY"],
             bg=config.colors["BG"],
             *args, **kwargs)

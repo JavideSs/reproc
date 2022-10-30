@@ -2,7 +2,9 @@
 
 ## Future
 
-- Prevent "(Not Responding)" when loading a playlist.
+- Prevent play a deleted song.
+- Check dialog messages.
+- Windows11 support.
 - Linux support.
 - Underline characters in song titles when filtering playlist.
     <br>https://stackoverflow.com/a/70501656/13829542

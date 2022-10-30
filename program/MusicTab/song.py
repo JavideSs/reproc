@@ -25,7 +25,9 @@ class Song():
         self.path = song_path
         self.time = round(TinyTag.get(self.path).duration)
         self.date = os.path.getmtime(self.path)
-        self.visible_inplaylist = True
+
+        self.visible = True
+        self.visible_inplaylist = False
 
     #__________________________________________________
 
@@ -75,11 +77,6 @@ class Song():
 
     def getArt(self, scale:Tuple[int,int]) -> PILImage:
         art_data = TinyTag.get(self.path, image=True).get_image()
-
-        #https://github.com/devsnd/tinytag/issues/100
-        if art_data[:10] == b"o\x00v\x00e\x00r\x00\x00\x00":
-            art_data = art_data[10:]
-
         art_data_pil = Image.open(BytesIO(art_data))
         art_data_pil.thumbnail(scale, Image.ANTIALIAS)
         return art_data_pil
