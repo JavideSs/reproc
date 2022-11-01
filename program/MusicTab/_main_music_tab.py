@@ -52,12 +52,14 @@ class MusicTab(Frame):
 
         #___
 
-        #Direct play when pre click on an itemTV's play image
+        #Direct play when doubleclick on an itemTV
+        self.playlist.bind("<Double-ButtonRelease-1>", lambda _event: self.fdirectplay())
+        #Direct play when click on an itemTV play image
         self.playlist.bind("<ButtonRelease-1>", lambda event: self.fdirectplay() if event.x < ROW_HEIGHT else None)
-        #Direct play when the return key is pressed on an itemTV
+        #Direct play when press return key on an itemTV
         self.playlist.bind("<Return>", lambda _event: self.fdirectplay())
 
-        #Set time when pre click on the timeline
+        #Set time when click on the timeline
         self.song_control.timeline.scale_time.bind("<ButtonRelease-1>", self._setTime)
 
         #When these keys are pressed and there is no focus on an entry
@@ -77,7 +79,9 @@ class MusicTab(Frame):
     #__________________________________________________
 
     def saveJson(self):
-        #Other saves are updated when their associated event is called
+        '''
+        Other saves are updated when their associated event is called
+        '''
         config.general.update(self.playlist.getStates())
     #___
 

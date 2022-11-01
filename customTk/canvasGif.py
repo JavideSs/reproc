@@ -8,9 +8,11 @@ from data.data_types import *
 
 #==================================================
 
-#Class to add and control a transparent gif in tkinter
-#https://stackoverflow.com/questions/20370864/no-transparency-in-animated-gif-with-tkinter
+
 class TkCanvasGif(Canvas):
+    #Class to add and control a transparent gif in tkinter
+    #https://stackoverflow.com/questions/20370864/no-transparency-in-animated-gif-with-tkinter
+
     def __init__(self, w, gif:PILImage, size:tuple, bg:str=None, *args, **kwargs):
 
         super().__init__(w,

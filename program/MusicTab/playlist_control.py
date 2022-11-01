@@ -265,11 +265,9 @@ class PlaylistHandlerSet(Frame):
         config_state_widget(self.playlist_control, "normal")
 
     def setPlaylist(self, playlist:str):
-        '''
-        There will be no playlist when starting the application
-        if the playlist had been destroyed with "self.delPlaylist()"
-        and closed without selecting one playlist
-        '''
+        #There will be no playlist when starting the application
+        #if the playlist had been destroyed with "self.delPlaylist()"
+        #and closed without selecting one playlist
         if playlist == "":
             self.menubtn["text"] = self.EMPTY_MENUBTN
             return

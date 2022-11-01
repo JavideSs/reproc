@@ -36,11 +36,11 @@ class Song():
 
     def setPath(self, path:str):
         self.__path = path
-        name = os.path.splitext(os.path.basename(self.path))[0]
+        name = os.path.splitext(os.path.basename(path))[0]
         #Keep special characters
         #https://stackoverflow.com/questions/44965129/ucs-2-not-able-to-encode
-        self.__name = ''.join(c if c <= '\uffff'
-            else ''.join(chr(x) for x in struct.unpack('>2H', c.encode('utf-16be')))
+        self.__name = "".join(c if c <= "\uffff"
+            else "".join(chr(x) for x in struct.unpack(">2H", c.encode("utf-16be")))
             for c in name)
 
     path = property(fget=getPath, fset=setPath)

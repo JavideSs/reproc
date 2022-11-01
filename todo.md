@@ -2,12 +2,8 @@
 
 ## Future
 
-- Prevent play a deleted song.
-- Check dialog messages.
 - Windows11 support.
 - Linux support.
-- Underline characters in song titles when filtering playlist.
-    <br>https://stackoverflow.com/a/70501656/13829542
 - Choose another music playback module.
     <br>https://github.com/cheofusi/just_playback
     - Lite
@@ -25,9 +21,10 @@
     <br>https://www.youtube.com/watch?v=JIy0QjwQBl0&t=14s&ab_channel=RamonWilliams
 - More Windows features.
     <br>https://docs.microsoft.com/en-us/uwp/api/Windows.Media.MediaControl?redirectedfrom=MSDN&view=winrt-22000
-- Streaming radio channels
+- Listen radio channels.
+- Stream stereo music between friends.
 - Different themes.
-- Different languages.
+- Different languages. Simple tutorial for how to use gettext (class variables are not allowed)
 - Developer guide.
 
 ---

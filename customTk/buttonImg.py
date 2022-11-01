@@ -6,11 +6,11 @@ from abc import ABC, abstractmethod
 
 from data.data_types import *
 
-#Receives a tuple of images that it contemplates
-#They can be set automatically on each click, or manually
 #==================================================
 
 class TkButtonImg(ABC, Button):
+    #Receives a tuple of images that it contemplates
+    #They can be set automatically on each click, or manually
     def __init__(self, w, command:Callable, imgs:Tuple[TkImage,...], bg:str, change_img_on_click:bool=False, *args, **kwargs):
         self.imgs = imgs
         self.img_tag_now = 0

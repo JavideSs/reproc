@@ -61,18 +61,13 @@ class Playlist(Treeview):
 
         #___
 
-        '''
-        A song is loaded when no song has been heard yet, or self.playNext() cannot be done
-        "self.isSongPlaying()" is false when song is paused, is false when not song is loaded
-        "self.isSongLoad()" is true when song is paused, is false when not song is loaded
-        "any(self.__songs_previous_id)" is true when song is paused, is true when not song is loaded but there has already been at least one song loaded
-        '''
+        #A song is loaded when no song has been heard yet, or self.playNext() cannot be done
+        #"self.isSongPlaying()" is false when song is paused, is false when not song is loaded
+        #"self.isSongLoad()" is true when song is paused, is false when not song is loaded
+        #"any(self.__songs_previous_id)" is true when song is paused, is true when not song is loaded but there has already been at least one song loaded
 
-        '''
-        (*)
-        In pygame v1 "get_busy()" indicated "self.isSongLoad()", so self.__ is_playing had to be manually controlled
-        In pygame v2 "get_busy()" indicated "self.isSongPlaying()", so self.__is_load had to be manually controlled
-        '''
+        #! In pygame v1 "get_busy()" indicated "self.isSongLoad()", so self.__ is_playing had to be manually controlled
+        #! In pygame v2 "get_busy()" indicated "self.isSongPlaying()", so self.__is_load had to be manually controlled
 
         self.__state_random = False
         self.__state_loop = False
@@ -494,7 +489,8 @@ class LabelEditSong(Frame):
         #New label if it is the right click
         if event and event.num==3:
             LabelEditSong(self.playlist, event)
-        #Unbind all and bind right btn by default
+
+        #Unbind or bind by default
         else:
             self.playlist.unbind("<Button-1>")
             self.playlist.bind("<MouseWheel>", self.playlist._motionItem)
@@ -557,7 +553,7 @@ class LabelEditSong(Frame):
 
 
     def _move(self):
-        tk_main_w = Widget.nametowidget(self, '.')
+        tk_main_w = Widget.nametowidget(self, ".")
         coord_x = tk_main_w.winfo_x() + 250
         coord_y = tk_main_w.winfo_y() + self.__coord_y + 150
 

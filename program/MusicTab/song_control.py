@@ -117,9 +117,7 @@ class SongControl(Frame):
 
         #___
 
-        '''
-        "self.__volume_previous" != 0 when mute, represents the volume before mute, == 0 when unmute
-        '''
+        #self.__volume_previous" != 0 when mute, represents the volume before mute, == 0 when unmute
         self.__volume_previous = 0
 
     #__________________________________________________
@@ -233,20 +231,21 @@ class Timeline(Frame):
 
     #___
 
-    '''
-    Scale time to Song time
-    scale.time -> 100 | x -> song.time | => x = scale.time*song.time/100
-    '''
+
     def getTime(self, song:Song=None) -> int:
+        '''
+        Scale time to Song time
+        scale.time -> 100 | x -> song.time | => x = scale.time*song.time/100
+        '''
         song = self.song_playing if song is None else song
         return round((self.state_scale_time.get() * song.time) / 100)
 
 
-    '''
-    Song time to Scale time
-    time -> song.time | x -> 100 | => x = time*100/song.time
-    '''
     def setTime(self, time:int):
+        '''
+        Song time to Scale time
+        time -> song.time | x -> 100 | => x = time*100/song.time
+        '''
         self.state_scale_time.set((time * 100) / self.song_playing.time)
         self.state_txt_time1.set(Song.timeFormat(time))
 
