@@ -4,7 +4,7 @@
         "random": false,
         "loop": false,
         "playlist": "",
-        "language": "en",
+        "lang": "en",
         "theme": "normal"
     },
     "Playlists": {},
@@ -12,8 +12,8 @@
         "normal": {
             "BG": "#f5f6f7",
             "FG": "black",
-            "BG_WIDGET_GREY": "#d2d4d8",
-            "BG_WIDGET_BLUE": "#5295e2",
+            "WIDGET_BG1": "#d2d4d8",
+            "WIDGET_BG2": "#5295e2",
             "BTN_BG_HOVER": "#e6f0fb",
             "TV_BG": "#f0f0f7",
             "TV_BG_SELECT": "#DFDFEF",

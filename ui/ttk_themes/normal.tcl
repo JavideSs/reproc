@@ -12,8 +12,8 @@ namespace eval ttk::theme::normal {
 
     #___
 
-    font create font_default -family calibri -size 10
-    font create font_small_size -family calibri -size 8
+    font create font -family calibri -size 10
+    font create font_small -family calibri -size 8
 
     #___
 
@@ -34,7 +34,7 @@ namespace eval ttk::theme::normal {
             -background $colors(-bg) \
             -foreground $colors(-fg) \
             -troughcolor $colors(-bg) \
-            -font font_default \
+            -font font \
             -borderwidth 0
 
         #___
@@ -69,7 +69,7 @@ namespace eval ttk::theme::normal {
 
         ttk::style configure Treeview \
             -rowheight 25 \
-            -font font_default \
+            -font font \
             -background $colors(-tv_bg) \
             -foreground $colors(-tv_fg)
 

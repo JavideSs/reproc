@@ -1,5 +1,5 @@
-from tkinter import Toplevel, Widget, Frame, Label
-from customTk import TkButtonTextHoverBg
+from tkinter import Widget, Toplevel, Frame, Label
+from .buttonText import TkButtonTextHoverBg
 
 from data.data_types import *
 
@@ -36,11 +36,11 @@ class TkPopup(Toplevel):
             font="bold")
         self.btn_exit.pack(side="right")
 
-        self.w = Frame(self, bg=bg)
-        self.w.pack(side="bottom", fill="both", expand=True)
-
         self.titlebar.bind('<Button-1>', self.getCoord)
         self.lbl_title.bind('<Button-1>', self.getCoord)
+
+        self.w = Frame(self, bg=bg)
+        self.w.pack(side="bottom", fill="both", expand=True)
 
 
     #https://stackoverflow.com/questions/23836000/can-i-change-the-title-bar-in-tkinter/48738216#48738216

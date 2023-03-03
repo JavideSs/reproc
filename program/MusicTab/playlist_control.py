@@ -1,27 +1,30 @@
-from tkinter import PhotoImage, StringVar, messagebox, filedialog, Menu
+from tkinter import Menu, PhotoImage, messagebox, filedialog, StringVar
 from tkinter.ttk import Frame, Menubutton, Entry
-from customTk import TkButtonImgHoverBg, TkButtonTextHoverFg, TkFrameInfo, TkPopup, validEntryText
+from ui.customtk import TkButtonImgHoverBg, TkButtonTextHoverFg, TkFrameInfo, TkPopup
+from ui import validEntryText
 
-from data import config, images as b64img
+from ui import images as b64img
+
 from .song import Song
+
+from data import config
+from data.data_types import *
 
 import os, shutil
 from threading import Thread
 
-from data.data_types import *
-
 #==================================================
-
 
 class PlaylistControl(Frame):
     def __init__(self, w, *args, **kwargs):
-        self.EMPTY_SEARCH_TEXT = _("Search song...")    #After defined _ by gettext
+        self.EMPTY_SEARCH_TEXT = _("Search song...")    #fun: After defined _ by gettext
+
 
         self.playlist = w.playlist
 
+
         super().__init__(w, *args, **kwargs)
 
-        #___
 
         self.playlist_handler_edit = TkButtonImgHoverBg(self,
             command=lambda: TopLevelPlaylistEdit(self) if config.general["playlist"] != "" else None,
@@ -30,14 +33,10 @@ class PlaylistControl(Frame):
             bg_on_hover=config.colors["BTN_BG_HOVER"])
         self.playlist_handler_edit.grid(row=0, column=0, sticky="nsew")
 
-        #___
-
         self.playlist_handler_set = PlaylistHandlerSet(self)
         self.playlist_handler_set.grid(row=0, column=1, sticky="nsew", padx=(5,8), pady=5)
 
-        #___
-
-        #When the text is changed, the search function will be called
+        #When the text is changed, triggers "self._search()"
         self.state_entry_search = StringVar()
         self.state_entry_search.trace_add("write", self._search)
 
@@ -45,12 +44,9 @@ class PlaylistControl(Frame):
             width=15,
             textvariable=self.state_entry_search)
         self.entry_search.grid(row=0, column=2, sticky="nsew", pady=5)
-
         self.entry_search.insert(0, self.EMPTY_SEARCH_TEXT)
         self.entry_search.bind("<FocusIn>", self._entryFocusEnter)
         self.entry_search.bind("<FocusOut>", self._entryFocusLeave)
-
-        #___
 
         self.btn_search = TkButtonImgHoverBg(self,
             command=self._entryClear,
@@ -58,8 +54,6 @@ class PlaylistControl(Frame):
             bg=config.colors["BG"],
             bg_on_hover=config.colors["BTN_BG_HOVER"])
         self.btn_search.grid(row=0, column=3, sticky="nsew", padx=(0,5), pady=5)
-
-        #___
 
         self.btn_sorttitle = TkButtonImgHoverBg(self,
             command=lambda: self._sortPlaylist(self.btn_sorttitle, "title"),
@@ -69,8 +63,6 @@ class PlaylistControl(Frame):
             bg=config.colors["BG"],
             bg_on_hover=config.colors["BTN_BG_HOVER"])
         self.btn_sorttitle.grid(row=0, column=4, sticky="nsew")
-
-        #___
 
         self.btn_sortdate = TkButtonImgHoverBg(self,
             command=lambda: self._sortPlaylist(self.btn_sortdate, "date"),
@@ -82,8 +74,6 @@ class PlaylistControl(Frame):
             change_img_on_click=True)
         self.btn_sortdate.grid(row=0, column=5, sticky="nsew")
 
-        #___
-
         self.btn_sorttime = TkButtonImgHoverBg(self,
             command=lambda: self._sortPlaylist(self.btn_sorttime, "time"),
             imgs=(PhotoImage(data=b64img.btn_sorttime),
@@ -94,10 +84,9 @@ class PlaylistControl(Frame):
             change_img_on_click=True)
         self.btn_sorttime.grid(row=0, column=6, sticky="nsew")
 
-        #___
 
         self.btn_sorttitle.set_img(1)
-        self.__btn_sort_active:List[TkButtonImgHoverBg,int] = [self.btn_sorttitle, 1]
+        self.__btn_sort_active = [self.btn_sorttitle, 1]
 
     #__________________________________________________
 
@@ -114,6 +103,7 @@ class PlaylistControl(Frame):
             self.entry_search.insert(0, self.EMPTY_SEARCH_TEXT)
             config.playlist["filter"] = ""
 
+    #___
 
     def _entryClear(self):
         #Delete text and insert default text if there is no focus
@@ -145,7 +135,7 @@ class PlaylistControl(Frame):
         if btn != self.__btn_sort_active[0]:
             self.__btn_sort_active[0].set_img(0)            #Previous btn to normal
             if btn == self.btn_sorttitle: btn.set_img(1)    #Set title btn to up, the others are set automatically
-            self.__btn_sort_active = [btn, 1]               #Status is updated
+            self.__btn_sort_active = [btn, 1]               #States are updated
             self.playlist.sortBy(atr, False)
             config.playlist["sortby"] = [atr, False]
 
@@ -154,19 +144,19 @@ class PlaylistControl(Frame):
             #If the btn was in up
             if self.__btn_sort_active[1] == 1:
                 if btn == self.btn_sorttitle: btn.set_img(2)      #Set title btn to down, the others are set automatically
-                self.__btn_sort_active[1] = 2                     #Status is updated
+                self.__btn_sort_active[1] = 2                     #States are updated
                 self.playlist.sortBy(atr, True)
                 config.playlist["sortby"] = [atr, True]
 
             #If the btn was in down
             elif self.__btn_sort_active[1] == 2:
                 self.btn_sorttitle.set_img(1)                     #Set title btn to down, the others are set automatically
-                self.__btn_sort_active = [self.btn_sorttitle, 1]  #Status is updated
+                self.__btn_sort_active = [self.btn_sorttitle, 1]  #States are updated
                 self.playlist.sortBy("title", False)
                 config.playlist["sortby"] = ["title", False]
 
     def sortPlaylistForcedStates(self, atr:str, reverse:bool):
-        sort = 1+int(reverse)  #1 if reverse==False | 2 if reverse==True
+        sort = 1 if not reverse else 2
 
         if atr == "date":
             self.btn_sortdate.set_img(sort)
@@ -199,14 +189,16 @@ class PlaylistControl(Frame):
 
 class PlaylistHandlerSet(Frame):
     def __init__(self, w:PlaylistControl, *args, **kwargs):
-        self.EMPTY_MENUBTN:str = _("Select Playlist")    #After defined _ by gettext
+        self.EMPTY_MENUBTN:str = _("Select Playlist")    #fun: After defined _ by gettext
+
 
         self.playlist = w.playlist
         self.playlist_control = w
+        self.playback = w.master.playback
+
 
         super().__init__(w, *args, **kwargs)
 
-        #___
 
         self.menubtn = Menubutton(self,
             direction="above",
@@ -226,13 +218,12 @@ class PlaylistHandlerSet(Frame):
             #https://stackoverflow.com/questions/11723217/python-lambda-doesnt-remember-argument-in-for-loop
             func_get_set_playlist = lambda playlist=playlist: self.setPlaylist(playlist)
             self.menu.add_command(label=playlist, command=func_get_set_playlist)
-
         self.menubtn.configure(menu=self.menu)
 
     #__________________________________________________
 
     def _newPlaylist(self):
-        folder:str = filedialog.askdirectory(title=_("Select folder for new playlist"))
+        folder = filedialog.askdirectory(title=_("Select folder for new playlist"))
         if folder == "": return
 
         playlist = os.path.basename(folder)
@@ -241,33 +232,30 @@ class PlaylistHandlerSet(Frame):
             config.user_config["Playlists"][playlist] = {
                 "path":os.path.normcase(folder),
                 "sortby":["title",False],
-                "filter":""}
+                "filter":""
+            }
 
             self.menu.add_command(label=playlist, command=lambda: self.setPlaylist(playlist))
 
         self.setPlaylist(playlist)
 
-    def __setPlaylist(self, playlist:str, playlist_path:str):
-        '''
-        self.__allsongs is still updating, prevent editing it
-        '''
-        def config_state_widget(widget, state):
-            for child in widget.children.values():
-                try: child.configure(state=state)
-                except: pass
-
-        self.menubtn["text"] = playlist
-        self.playlist_control.setSearch(config.playlist["filter"])  #No songs yet, write event has effect on nothing
-        self.playlist_control.sortPlaylistForcedStates(*config.playlist["sortby"])
-
-        config_state_widget(self.playlist_control, "disable")
-        self.playlist.setPlaylist(playlist_path, config.playlist["filter"], config.playlist["sortby"])
-        config_state_widget(self.playlist_control, "normal")
 
     def setPlaylist(self, playlist:str):
-        #There will be no playlist when starting the application
-        #if the playlist had been destroyed with "self.delPlaylist()"
-        #and closed without selecting one playlist
+        def setPlaylist(playlist:str, playlist_path:str):
+            #self.playback.songs is updating, prevent editing it
+            def config_state_widget(widget, state):
+                for child in widget.children.values():
+                    try: child.configure(state=state)
+                    except: pass
+
+            self.menubtn["text"] = playlist
+            self.playlist_control.setSearch(config.playlist["filter"])  #No songs yet, write event has effect on nothing
+            self.playlist_control.sortPlaylistForcedStates(*config.playlist["sortby"])
+
+            config_state_widget(self.playlist_control, "disable")
+            self.playlist.setPlaylist(playlist_path, config.playlist["filter"], config.playlist["sortby"])
+            config_state_widget(self.playlist_control, "normal")
+
         if playlist == "":
             self.menubtn["text"] = self.EMPTY_MENUBTN
             return
@@ -284,10 +272,25 @@ class PlaylistHandlerSet(Frame):
         config.playlist = playlist_dict
 
         Thread(
-            target=self.__setPlaylist,
+            target=setPlaylist,
             args=(playlist, playlist_path),
             daemon=True
         ).start()
+
+
+    def renamePlaylist(self, playlist_new:str, playlist_new_path:str):
+        playlist_old = config.general["playlist"]
+        config.general["playlist"] = playlist_new
+        config.user_config["Playlists"][playlist_new] = config.user_config["Playlists"].pop(playlist_old)
+        config.playlist = config.user_config["Playlists"][playlist_new]
+        config.playlist["path"] = playlist_new_path
+
+        self.menu.entryconfig(str(self.menu.index(playlist_old)), label=playlist_new, command=lambda: self.setPlaylist(playlist_new))
+        self.menubtn["text"] = playlist_new
+
+        #Change the path of each song in the playlist
+        for song in self.playback.songs:
+            song.path = os.path.join(playlist_new_path, song.name) + song.extension
 
 
     def delPlaylist(self, playlist:str, in_tv:bool=True, unload:bool=False):
@@ -300,21 +303,6 @@ class PlaylistHandlerSet(Frame):
             self.playlist.delPlaylist(unload=unload)
 
 
-    def renamePlaylist(self, playlist_new:str, playlist_new_path:str):
-        playlist_old = config.general["playlist"]
-        config.general["playlist"] = playlist_new
-        config.user_config["Playlists"][playlist_new] = config.user_config["Playlists"].pop(playlist_old)
-        config.playlist = config.user_config["Playlists"][playlist_new]
-        config.playlist["path"] = playlist_new_path
-
-        self.menu.entryconfig(self.menu.index(playlist_old), label=playlist_new, command=lambda: self.setPlaylist(playlist_new))
-        self.menubtn["text"] = playlist_new
-
-        #Change the path of each song in the playlist
-        for song in self.playlist.getAllSongs():
-            song.path = os.path.join(playlist_new_path, song.name) + song.extension
-
-
 #==================================================
 
 
@@ -323,23 +311,20 @@ class TopLevelPlaylistEdit(TkPopup):
 
         self.playlist = w.playlist
         self.playlist_handler_set = w.playlist_handler_set
+        self.playback = w.master.playback
 
         super().__init__(w,
             coord=(100,150),
             geometry="200x205",
             title="Playlist Control Panel",
-            bg_bar=config.colors["BG_WIDGET_GREY"],
+            bg_bar=config.colors["WIDGET_BG1"],
             bg=config.colors["BG"],
             *args, **kwargs)
 
-        #___
 
         self.entry_playlist = Entry(self.w)
         self.entry_playlist.grid(row=0, column=0, padx=(5,0), pady=(5,0))
-
         self.entry_playlist.insert(0, config.general["playlist"])
-
-        #___
 
         self.btn_save_playlist_name = TkButtonImgHoverBg(self.w,
             command=self._renamePlaylist,
@@ -348,8 +333,6 @@ class TopLevelPlaylistEdit(TkPopup):
             bg_on_hover=config.colors["BTN_BG_HOVER"])
         self.btn_save_playlist_name.grid(row=0, column=1, sticky="nsew", pady=(5,0))
 
-        #___
-
         self.btn_delete_playlist = TkButtonImgHoverBg(self.w,
             command=self._delPlaylist,
             imgs=(PhotoImage(data=b64img.btn_TV_edit_delete),),
@@ -357,49 +340,36 @@ class TopLevelPlaylistEdit(TkPopup):
             bg_on_hover=config.colors["BTN_BG_HOVER"])
         self.btn_delete_playlist.grid(row=0, column=2, sticky="nsew", padx=(0,5), pady=(5,0))
 
-        #___
-
         self.frame_path = TkFrameInfo(self.w,
             text=_("Path:"),
             lbl_width=5, info_width=25,
             info_bg=config.colors["BG"])
         self.frame_path.grid(row=1, column=0, columnspan=3, padx=5, pady=(10,5))
-
         self.frame_path.insert(config.playlist["path"])
-
-        #___
 
         self.frame_size = TkFrameInfo(self.w,
             text=_("Size on disk:"),
             lbl_width=18, info_width=10,
             info_bg=config.colors["BG"])
         self.frame_size.grid(row=2, column=0, columnspan=3, padx=5)
-
-        playlist_size_MB = sum(map(lambda song: os.path.getsize(song.path), self.playlist.getAllSongs())) // (1024*1024)
+        playlist_size_MB = sum(map(lambda song: os.path.getsize(song.path), self.playback.songs)) // (1024*1024)
         self.frame_size.insert(f"{playlist_size_MB} MB")
-
-        #___
 
         self.frame_num = TkFrameInfo(self.w,
             text=_("Number of songs:"),
             lbl_width=18, info_width=10,
             info_bg=config.colors["BG"])
         self.frame_num.grid(row=3, column=0, columnspan=3, padx=5, pady=(5,10))
-
-        playlist_len = len(self.playlist.getAllSongs())
-        self.frame_num.insert(playlist_len)
-
-        #___
+        playlist_len = len(self.playback.songs)
+        self.frame_num.insert(str(playlist_len))
 
         self.btn_add_songs = TkButtonTextHoverFg(self.w,
             command=self._addSongs,
-            text=_("----- Add songs -----"),
+            text=_("----- [Add songs] -----"),
             bg = config.colors["BG"],
             fg=config.colors["FG"],
             fg_on_hover="blue")
         self.btn_add_songs.grid(row=4, column=0, columnspan=3, sticky="nsew", padx=5)
-
-        #___
 
         self.btn_open_folder = TkButtonImgHoverBg(self.w,
             command=lambda: os.system(config.CMD_TO_OPEN_EXPLORER.format(config.playlist["path"])),
@@ -409,6 +379,19 @@ class TopLevelPlaylistEdit(TkPopup):
         self.btn_open_folder.grid(row=5, column=0, columnspan=3, sticky="nsew", padx=5, pady=10)
 
     #__________________________________________________
+
+    def _renamePlaylist(self):
+        playlist_name_new = self.entry_playlist.get()
+        if validEntryText(playlist_name_new, text_original=config.general["playlist"]):
+            try:
+                playlist_path_new = os.path.join(os.path.dirname(config.playlist["path"]), playlist_name_new)
+                os.rename(config.playlist["path"], playlist_path_new)
+
+                self.playlist_handler_set.renamePlaylist(playlist_name_new, playlist_path_new)
+                self.frame_path.insert(config.playlist["path"])
+            except:
+                messagebox.showerror(_("Rename failed"), _("Unknown action not allowed"))
+
 
     def _delPlaylist(self):
         self.bell()
@@ -424,36 +407,23 @@ class TopLevelPlaylistEdit(TkPopup):
         self.destroy()
 
 
-    def _renamePlaylist(self):
-        playlist_name_new = self.entry_playlist.get()
-        if validEntryText(playlist_name_new, text_original=config.general["playlist"]):
-            try:
-                playlist_path_new = os.path.join(os.path.dirname(config.playlist["path"]), playlist_name_new)
-                os.rename(config.playlist["path"], playlist_path_new)
-
-                self.playlist_handler_set.renamePlaylist(playlist_name_new, playlist_path_new)
-                self.frame_path.insert(config.playlist["path"])
-            except:
-                messagebox.showerror(_("Rename failed"), _("Unknown action not allowed"))
-
-
     def _addSongs(self):
         songs_path = filedialog.askopenfilenames(title=_("Select"))
         if not songs_path: return
 
         for song_path in songs_path:
+            song_name = os.path.basename(song_path)
+
+            if not song_name.endswith(config.SUPPORTED_SONG_FORMATS):
+                messagebox.showerror(_("Load failed"), _("Sound format not supported "))
+                continue
+
             try:
-                song_name:str = os.path.basename(song_path)
-
-                if not song_name.endswith(config.SUPPORTED_SONG_FORMATS):
-                    messagebox.showerror(_("Load failed"), _("Sound format not supported "))
-                    continue
-
                 song_path_new = os.path.join(config.playlist["path"], song_name)
                 shutil.copy2(src=song_path, dst=config.playlist["path"])
 
-                self.playlist + Song(song_path_new)
-                self.frame_size.insert(int(self.frame_size.get()[:-3]) + (os.path.getsize(song_path_new) // (1024*1024)))
-                self.frame_num.insert(int(self.frame_num.get()) + 1)
+                self.playlist.append(Song(song_path_new))
+                self.frame_size.insert(str(int(self.frame_size.get()[:-3]) + (os.path.getsize(song_path_new) // (1024*1024))))
+                self.frame_num.insert(str(int(self.frame_num.get()) + 1))
             except:
                 messagebox.showerror(_("Load failed"), _("Unknown action not allowed"))

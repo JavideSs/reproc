@@ -1,10 +1,10 @@
 from tkinter import Canvas
 
-from data.images.utilities import PILToTk
-
-from PIL import ImageSequence
+from ui.images.utilities import *
 
 from data.data_types import *
+
+from PIL import ImageSequence
 
 #==================================================
 
@@ -13,7 +13,7 @@ class TkCanvasGif(Canvas):
     #Class to add and control a transparent gif in tkinter
     #https://stackoverflow.com/questions/20370864/no-transparency-in-animated-gif-with-tkinter
 
-    def __init__(self, w, gif:PILImage, size:tuple, bg:str=None, *args, **kwargs):
+    def __init__(self, w, gif:PILImage, size:tuple, bg:str|Any=None, *args, **kwargs):
 
         super().__init__(w,
             width=size[0], height=size[1],

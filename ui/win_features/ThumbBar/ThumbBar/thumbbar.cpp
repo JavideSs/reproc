@@ -8,7 +8,7 @@
 #define IDTB_BTN_PLAYPAUSE  0002
 #define IDTB_BTN_NEXT       0003
 
-#define RELPATH L"customTk\\win_features\\ThumbBar\\images\\"
+#define RELPATH L"ui\\win_features\\ThumbBar\\images\\"
 #define IMGPATH_BTN96  RELPATH"TBbtns96.bmp"
 #define IMGPATH_BTN120 RELPATH"TBbtns120.bmp"
 #define IMGPATH_BTN144 RELPATH"TBbtns144.bmp"

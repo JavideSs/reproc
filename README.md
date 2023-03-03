@@ -16,25 +16,22 @@ Refer to user guide at
 - Modify songs/playlists directly in the application.
 - Handling multiplaylists.
 - Keyboard shortcuts.
-- Win32 Thumbnail toolbar like Windows Media Player.
+- Win Thumbnail toolbar like Windows Media Player.
 - Data constancy when reopening the application.
 
 ## Dependencies
 It has not been extensively tested yet. The following dependencies have been tested while developing on Windows 10.
 - Python 3.10.2.
 - Tkinter Tcl/Tk 8.6.
-- [Pillow](https://python-pillow.org/) 8.4.0 : Imaging library for python.
-- [Pygame](https://www.pygame.org/) 2.1.2 : (the mixer only) sdl2 mixer interface for python.
+- [Pillow](https://python-pillow.org/) 9.4.0 : Imaging library for python.
 - [Tinytag](https://github.com/devsnd/tinytag) 1.8.1 : Music metadata reader.
+- [Pygame](https://www.pygame.org/) 2.2.0 : (the mixer only) sdl2 mixer interface for python.
 
 ---
 
 ## Why open-source software?
-***"If the product is free, then you are the product"***  
-Most free closed-source software collect data about you, and you can never know if it has any trojan or spy-wares inside.
-With open source, nothing hidden, and source code exposed to thousands of programmers, no one can play dirty games.
-
-Need to mention, this project is never made to compete with any other music player, it is just a simple player that i started when i was a programming newbie and whit which i have learned many new things.  
+***"If the product is free and closed, then you are the product"***  
+This project is never made to compete with any other music player, it is just a simple player that I started when I was a programming newbie and whit which I have learned many new things.  
 The fact that it is wirtten in a scripting language like python makes it perform worse and slower, as well as having a not very customizable interface due to the the limitations of tcl/tk.  
 That is why this is a purely educational project, which must be freely published.
 
@@ -46,4 +43,4 @@ Your feedback is most welcomed by filling a
 
 Author:  
 Javier Mellado Sánchez  
-2020-2022
+2020-2023

@@ -1,29 +1,29 @@
-from tkinter import PhotoImage, Widget, messagebox, Frame, Menu, Entry
+from tkinter import Widget, Frame, Menu, Entry, messagebox, PhotoImage
 from tkinter.ttk import Treeview, Separator
-from customTk import TkButtonImgHoverBg, validEntryText
+from ui.customtk import TkButtonImgHoverBg
+from ui import validEntryText
 
-from data import config, images as b64img
-from data.images.utilities import TkSolid
+from ui import images as b64img
+from ui.images.utilities import *
+
 from .song import Song
 
+from data import config
+from data.data_types import *
+
 import os, shutil
-from random import choice
 from operator import attrgetter
 from locale import setlocale, strxfrm, LC_ALL
 
-from pygame import mixer
-
-from data.data_types import *
-
 #==================================================
 
-COLUMN_TITLE_WIDTH = 335
-COLUMN_DURATION_WIDTH = 50
-ROW_HEIGHT = 25
-N_ROWS = 14
-IMGS_SIZE = (ROW_HEIGHT,ROW_HEIGHT)
+class Playlist(Treeview, TPlaylist):
+    N_ROWS = 14
+    ROW_HEIGHT = 25
+    COLUMN_TITLE_WIDTH = 335
+    COLUMN_DURATION_WIDTH = 50
+    IMGS_SIZE = (ROW_HEIGHT,ROW_HEIGHT)
 
-class Playlist(Treeview):
     def __init__(self, w, *args, **kwargs):
 
         #selectmode="browse"    -> Cannot select multiple songs
@@ -34,77 +34,54 @@ class Playlist(Treeview):
             *args, **kwargs)
 
         self["columns"] = ("#duration")
-        self.column("#0", width=COLUMN_TITLE_WIDTH)
-        self.column("#duration", width=COLUMN_DURATION_WIDTH)
-
-        #___
+        self.column("#0", width=Playlist.COLUMN_TITLE_WIDTH)
+        self.column("#duration", width=Playlist.COLUMN_DURATION_WIDTH)
 
         self.imgs = {
             "play"      : PhotoImage(data=b64img.btn_TV_play),
             "playing"   : PhotoImage(data=b64img.btn_TV_playing),
-            "none"      : TkSolid(size=IMGS_SIZE, color=config.colors["BG"])
+            "none"      : TkSolid(size=Playlist.IMGS_SIZE, color=config.colors["BG"])
         }
 
-        #___
 
-        #Fix: Scroll does not detect the change of itemTV, we must do it manually
-        self.bind("<MouseWheel>", self._motionItem)
         #Stop hovering itemTV when stop hovering in TV
-        self.bind("<Leave>", self._motionItemLeave)
+        self.bind("<Leave>", self._movItemLeave)
+        #Fix: Scroll does not detect the change of itemTV, we must do it manually
+        self.bind("<MouseWheel>", self._movItem)
         #Edit song when right click in itemTV
         self.bind("<Button-3>", lambda event: LabelEditSong(self, event))
 
-        #___
 
-        setlocale(LC_ALL, "")                   #Accepts special characters from all languages
-        mixer.init(frequency=48000, channels=2) #MP3 frequency with 320kbps by default, stereo
-
-        #___
-
-        #A song is loaded when no song has been heard yet, or self.playNext() cannot be done
-        #"self.isSongPlaying()" is false when song is paused, is false when not song is loaded
-        #"self.isSongLoad()" is true when song is paused, is false when not song is loaded
-        #"any(self.__songs_previous_id)" is true when song is paused, is true when not song is loaded but there has already been at least one song loaded
-
-        #! In pygame v1 "get_busy()" indicated "self.isSongLoad()", so self.__ is_playing had to be manually controlled
-        #! In pygame v2 "get_busy()" indicated "self.isSongPlaying()", so self.__is_load had to be manually controlled
-
-        self.__state_random = False
-        self.__state_loop = False
-
-        self.__is_load = False
-
-        self.__song_playing = Song(Song.NONE_SONG)
         self.__song_hover_id = Song.NONE_ID
 
-        self.__songs_all:List[Song] = []
-        self.__songs_previous_id:List[int] = []
+
+        setlocale(LC_ALL, "")   #Accepts special characters from all languages
 
     #__________________________________________________
 
-    def _motionItemLeave(self, _event):
+    def _movItemLeave(self, _event):
         #"self.__song_hover_id" may have no value when the TV is not completely full
-        #"self.__song_playing.id" is not modified
-        if self.__song_hover_id!=Song.NONE_ID and self.__song_hover_id!=self.__song_playing.id:
-            self.tag_configure(self.__song_hover_id,
+        #"self.playback.song_playing.id" is not modified
+        if self.__song_hover_id!=Song.NONE_ID and self.__song_hover_id!=self.playback.song_playing.id:
+            self.tag_configure(str(self.__song_hover_id),
                 image=self.imgs["none"],
                 background=config.colors["TV_BG"],
                 foreground=config.colors["TV_FG"])
             self.__song_hover_id = Song.NONE_ID
 
 
-    def _motionItem(self, event:Event):
+    def _movItem(self, event:Event):
         #Fix down scroll
         if event.delta == -120:
             #if its not the beginning
-            if self.identify_row(ROW_HEIGHT*(N_ROWS +1)):
-                event_y = event.y+ROW_HEIGHT
+            if self.identify_row(Playlist.ROW_HEIGHT*(Playlist.N_ROWS +1)):
+                event_y = event.y + Playlist.ROW_HEIGHT
             else: return
         #Fix up scroll
         elif event.delta == 120:
             #If its not the end
-            if self.identify_row(-ROW_HEIGHT):
-                event_y = event.y-ROW_HEIGHT
+            if self.identify_row(-Playlist.ROW_HEIGHT):
+                event_y = event.y - Playlist.ROW_HEIGHT
             else: return
         #Not scroll
         else:
@@ -116,17 +93,17 @@ class Playlist(Treeview):
         if item_hover_id != self.__song_hover_id:
             #Reset previous hover itemTV
             if self.__song_hover_id != Song.NONE_ID:
-                if self.__song_hover_id != self.__song_playing.id:
-                    self.tag_configure(self.__song_hover_id,
+                if self.__song_hover_id != self.playback.song_playing.id:
+                    self.tag_configure(str(self.__song_hover_id),
                         image=self.imgs["none"],
                         background=config.colors["TV_BG"],
                         foreground=config.colors["TV_FG"])
                 else:
-                    self.tag_configure(self.__song_hover_id,
+                    self.tag_configure(str(self.__song_hover_id),
                         background=config.colors["TV_BG"])
             #Config new hover itemTV
-            if item_hover_id != self.__song_playing.id:
-                self.tag_configure(item_hover_id,
+            if item_hover_id != self.playback.song_playing.id:
+                self.tag_configure(str(item_hover_id),
                     image=self.imgs["play"],
                     background=config.colors["TV_BG_HOVER"],
                     foreground=config.colors["TV_FG_HOVER"])
@@ -135,12 +112,41 @@ class Playlist(Treeview):
 
     #___
 
+    def setFocus(self, id:int):
+        self.selection_set(str(id))
+        self.focus(str(id))
+        self.see(str(id))
+
+
+    def setPlay(self, id:int):
+        self.tag_configure(str(id),
+            image=self.imgs["playing"],
+            foreground=config.colors["TV_FG_PLAYING"])
+
+
+    def setPause(self, id:int):
+        self.tag_configure(str(id),
+            image=self.imgs["play"])
+
+
+    def setUnload(self, id:int):
+        self.tag_configure(str(id),
+            image=self.imgs["none"],
+            foreground=config.colors["TV_FG"])
+
+    #___
+
+    def setPlayback(self, playback):
+        self.playback = playback
+
+    #___
+
     def setPlaylist(self, playlist_path:str, filter:str, sortby:Tuple[str,bool]):
         self.delPlaylist()
 
         for file in os.scandir(playlist_path):
             if file.is_file and file.name.endswith(config.SUPPORTED_SONG_FORMATS):
-                self.__songs_all.append(Song(file.path))
+                self.playback.songs.append(Song(file.path))
 
         self.filterName(filter, refresh=False)
         self.sortBy(*sortby, refresh=False)
@@ -148,236 +154,86 @@ class Playlist(Treeview):
 
 
     def delPlaylist(self, unload=False):
-        self.__songs_all.clear()
-        self.__songs_previous_id.clear()
+        self.playback.songs.clear()
+        self.playback.songs_previous_id.clear()
         self.delete(*self.get_children())
 
-        if unload and self.isSongLoad():
-            mixer.music.unload()
-            mixer.music.stop()
-            self.__is_load = False
-            self.__song_playing.id = Song.NONE_ID
+        if unload and self.playback.isSongLoad():
+            self.playback.stop()
+            self.playback.song_playind_id = Song.NONE_ID
 
     #___
 
     #Insert song in TV
-    def __insertSongTV(self, song:Song, pos:str="end"):
+    def __insertSongTV(self, song:Song, pos:int|Literal["end"]="end"):
         self.insert(
             "", pos,
             text="   "+song.name,
-            values=(song.getTimeFormat(),),
-            iid=song.id, tag=song.id)
+            values=(song.getFormattedTime(),),
+            iid=str(song.id), tags=str(song.id))
 
-        #Magically the previous state if it was filtered is preserved
-        if song.id != self.__song_playing.id:
-            self.tag_configure(song.id,
+        #fun: The previous state if it was filtered remains
+        if song.id != self.playback.song_playing.id:
+            self.tag_configure(str(song.id),
                 image=self.imgs["none"])
 
-        self.tag_bind(song.id, "<Motion>", callback=self._motionItem)
+        self.tag_bind(str(song.id), "<Motion>", callback=self._movItem)
 
 
     #Move song in TV
     def move(self, song:Song, pos_new:int):
-        self.delete(song.id)
+        self.delete(str(song.id))
         self.__insertSongTV(song, pos_new)
 
 
     #Insert song in playlist/TV
-    def __add__(self, song:Song):
-        self.__songs_all.append(song)
+    def append(self, song:Song):
+        self.playback.songs.append(song)
         self.__insertSongTV(song)
-        self.selection_set(song.id)
-        self.see(song.id)
+        self.selection_set(str(song.id))
+        self.see(str(song.id))
 
 
     #Remove song in playlist/TV
-    def __sub__(self, song:Song):
-        self.__songs_all.remove(song)
-        if song.id in self.__songs_previous_id:
-            self.__songs_previous_id.remove(song.id)
-        self.delete(song.id)
+    def remove(self, song:Song):
+        self.playback.songs.remove(song)
+        if song.id in self.playback.songs_previous_id:
+            self.playback.songs_previous_id.remove(song.id)
+        self.delete(str(song.id))
 
     #___
 
-    def isSongLoad(self) -> bool:
-        return self.__is_load
+    def exists(self, id:int):
+        return super().exists(str(id))
 
 
-    def isSongPlaying(self) -> bool:
-        return mixer.music.get_busy()
+    def isListed(self, id:int):
+        return self.playback.getSongById(id)!=Song(Song.NONE_SONG) and self.playback.getSongById(id).visible
 
 
-    def isSongList(self, song:Song) -> bool:
-        return self.getSongById(song) is not None and self.getSongById(song).visible_inplaylist
+    def items(self):
+        return list(map(int, self.get_children()))
 
 
-    def getSongById(self, song_id:int) -> Song:
-        for song in self.__songs_all:
-            if song.id == song_id:
-                return song
-        return None
+    def firstItemVisible(self):
+        return int(self.identify_row(Playlist.ROW_HEIGHT))
 
 
-    def getSongPlaying(self) -> Song:
-        return self.__song_playing
-
-
-    def getAllSongs(self) -> List[Song]:
-        return self.__songs_all
+    def next(self, id:int):
+        nextid = super().next(str(id))
+        return int(nextid) if nextid else Song.NONE_ID
 
     #___
 
-    def playById(self, song_id:int):
-        #Reset previous playing itemTV
-        if len(self.__songs_previous_id):
-            self.tag_configure(self.__song_playing.id,
-                image=self.imgs["none"],
-                foreground=config.colors["TV_FG"])
+    def refresh(self):
+        self.delete(*self.get_children())
+        for song in self.playback.songs:
+            if song.visible:
+                self.__insertSongTV(song)
 
-        song = self.getSongById(song_id)
-
-        #pygame.mixer does not support different frequencies
-        if mixer.get_init()[0] != song.getFrequency():
-            mixer.quit()
-            mixer.init(frequency=song.getFrequency(), channels=2)
-
-        mixer.music.load(song.path)
-        mixer.music.play()
-        self.__is_load = True
-
-        self.__song_playing = song
-        self.tag_configure(self.__song_playing.id,
-            image=self.imgs["playing"],
-            foreground=config.colors["TV_FG_PLAYING"])
-
-        #Push to "self.__songs_previous_id" if it is the first song or it is not the previous song
-        if not len(self.__songs_previous_id) or song_id!=self.__songs_previous_id[-1]:
-            self.__songs_previous_id.append(song_id)
-
-
-    #Play the selected itemTV
-    def directPlay(self) -> bool:
-        #If song is playing, play/pause itemTV
-        if int(self.selection()[0]) == self.__song_playing.id:
-            self.playpause()
-            return False
-
-        #If new song, play selected itemTV
-        else:
-            self.playById(int(self.selection()[0]))
-            return True
-
-
-    def playpause(self) -> bool:
-        #Play to pause
-        if self.isSongPlaying():
-            mixer.music.pause()
-            self.tag_configure(self.__song_playing.id,
-                image=self.imgs["play"])
-            return False
-
-        else:
-            #Pause to play
-            if self.isSongLoad():
-                mixer.music.unpause()
-                self.tag_configure(self.__song_playing.id,
-                    image=self.imgs["playing"])
-                return False
-
-            #First song to listen
-            elif len(self.get_children()):
-                self.playNext()
-                return True
-
-            else: return False
-
-
-    def playNext(self) -> bool:
-        #In bucle
-        if self.__state_loop and len(self.__songs_previous_id):
-            mixer.music.rewind()
-
-        #In random and any in TV
-        elif self.__state_random and len(self.get_children()):
-            self.playById(choice([song for song in self.__songs_all if song.visible_inplaylist]).id)
-
-        #Now and next is in TV
-        elif self.isSongLoad() and self.isSongList(self.__song_playing.id) and self.next(self.__song_playing.id):
-            self.playById(int(self.next(self.__song_playing.id)))
-
-        #Any in TV
-        elif len(self.get_children()):
-            #Play first itemTV in view
-            self.playById(int(self.identify_row(ROW_HEIGHT)))
-
-        else:
-            self.__is_load = False
-            return False
-
-        self.selection_set(self.__song_playing.id)
-        self.focus(self.__song_playing.id)
-        self.see(self.__song_playing.id)
-        return True
-
-
-    def playPrevious(self) -> bool:
-        if len(self.__songs_previous_id):
-            #One is always left in the "self.__songs_previous_id", it loops with itself
-            if len(self.__songs_previous_id) > 1:
-                del self.__songs_previous_id[-1]
-
-                if self.exists(self.__songs_previous_id[-1]):
-                    self.playById(self.__songs_previous_id[-1])
-                #Rewind if the previous itemTV does not exist
-                else:
-                    mixer.music.rewind()
-            #Rewind if there is not previous itemTV
-            else:
-                mixer.music.rewind()
-
-            if self.exists(self.__songs_previous_id[-1]):
-                self.selection_set(self.__song_playing.id)
-                self.focus(self.__song_playing.id)
-                self.see(self.__song_playing.id)
-
-            return True
-        else: return False
-
-    #___
-
-    def toggleRandom(self):
-        self.__state_random = not self.__state_random
-
-
-    def toggleLoop(self):
-        self.__state_loop = not self.__state_loop
-
-    #___
-
-    @staticmethod
-    def setVolume(volume:float):
-        mixer.music.set_volume(volume)
-
-
-    @staticmethod
-    def setTime(time:float):
-        #(!) "set_pos()" advances rarely
-        mixer.music.rewind()
-        mixer.music.set_pos(time)
-
-    #___
-
-    def getStates(self) -> Dict[str,Any]:
-        return {
-            "volume": mixer.music.get_volume(),
-            "random": self.__state_random,
-            "loop": self.__state_loop
-        }
-
-    #___
 
     def filterName(self, song_name:str, refresh=True):
-        for song in self.__songs_all:
+        for song in self.playback.songs:
             song.visible = song_name.lower() in song.name.lower()
 
         if refresh: self.refresh()
@@ -385,19 +241,11 @@ class Playlist(Treeview):
 
     def sortBy(self, atr:str, reverse:bool, refresh=True):
         if atr == "title":
-            self.__songs_all.sort(reverse=reverse, key=lambda song: strxfrm(song.name))
+            self.playback.songs.sort(reverse=reverse, key=lambda song: strxfrm(song.name))
         else:
-            self.__songs_all.sort(reverse=reverse, key=lambda song: attrgetter(atr)(song))
+            self.playback.songs.sort(reverse=reverse, key=lambda song: attrgetter(atr)(song))
 
         if refresh: self.refresh()
-
-
-    def refresh(self):
-        self.delete(*self.get_children())
-        for song in self.__songs_all:
-            if song.visible:
-                self.__insertSongTV(song)
-                song.visible_inplaylist = True
 
 
 #==================================================
@@ -408,24 +256,26 @@ class LabelEditSong(Frame):
 
         self.playlist = playlist
         self.playlist_handler = playlist.master.playlist_control.playlist_handler_set
+        self.playback = playlist.master.playback
+
 
         song_id = int(playlist.identify_row(event.y))
-        self.song = self.playlist.getSongById(song_id)
+        self.song = self.playback.getSongById(song_id)
 
         coord = playlist.bbox(song_id)
         self.__coord_y = coord[1]
 
         colors = self.__colorItemTV()
 
+
         #highlightthickness=1 -> With outline
         super().__init__(self.playlist,
-            width=coord[2]-ROW_HEIGHT, height=coord[3],
+            width=int(coord[2]) - Playlist.ROW_HEIGHT, height=coord[3],
             background=colors[0],
             highlightthickness=1,
             *args, **kwargs)
         self.place(x=25, y=coord[1])
 
-        #___
 
         self.entry_edit_song = Entry(self,
             width=45,
@@ -438,12 +288,8 @@ class LabelEditSong(Frame):
         self.entry_edit_song.icursor(5)
         self.entry_edit_song.focus()
 
-        #___
-
         self.separator = Separator(self, orient="vertical")
         self.separator.grid(row=0, column=1, sticky="ns", pady=2)
-
-        #___
 
         self.btn_rename = TkButtonImgHoverBg(self,
             command=self._rename,
@@ -452,16 +298,12 @@ class LabelEditSong(Frame):
             bg_on_hover=config.colors["BTN_BG_HOVER"])
         self.btn_rename.grid(row=0, column=2)
 
-        #___
-
         self.btn_move = TkButtonImgHoverBg(self,
             command=self._move,
             imgs=(PhotoImage(data=b64img.btn_TV_edit_move),),
             bg=colors[0],
             bg_on_hover=config.colors["BTN_BG_HOVER"])
         self.btn_move.grid(row=0, column=3, padx=2)
-
-        #___
 
         self.btn_delete = TkButtonImgHoverBg(self,
             command=self._del,
@@ -470,7 +312,6 @@ class LabelEditSong(Frame):
             bg_on_hover=config.colors["BTN_BG_HOVER"])
         self.btn_delete.grid(row=0, column=4)
 
-        #___
 
         #Destroy when click in TV
         self.playlist.bind_all("<Button-1>", self._destroyLabel)
@@ -493,14 +334,14 @@ class LabelEditSong(Frame):
         #Unbind or bind by default
         else:
             self.playlist.unbind("<Button-1>")
-            self.playlist.bind("<MouseWheel>", self.playlist._motionItem)
+            self.playlist.bind("<MouseWheel>", self.playlist._movItem)
             self.playlist.bind("<Button-3>", lambda event: LabelEditSong(self.playlist, event))
         self.destroy()
 
     #___
 
-    def __isTheSongPlaying(self) -> bool:
-        return self.playlist.getSongPlaying().id == self.song.id
+    def __isTheSongPlaying(self):
+        return self.playback.song_playing == self.song
 
 
     def __colorItemTV(self) -> Tuple[str,str]:
@@ -518,7 +359,7 @@ class LabelEditSong(Frame):
 
     #___
 
-    def __checkImpediments(self, msg_error:str) -> bool:
+    def __canbeEdited(self, msg_error:str):
         if self.__isTheSongPlaying():
             messagebox.showerror(msg_error, _("Action not allowed with a song that is playing"))
 
@@ -528,18 +369,18 @@ class LabelEditSong(Frame):
 
         elif not os.path.exists(self.song.path):
             messagebox.showerror(msg_error, _("The song does not to exist"))
-            self.playlist - self.song
+            self.playlist.remove(self.song)
 
-        else: return False
-        return True
+        else:
+            return True
+        return False
 
-    #___
 
     def _rename(self):
         song_name_new = self.entry_edit_song.get()
         if validEntryText(song_name_new, text_original=self.song.name):
 
-            if not self.__checkImpediments(_("Rename failed")):
+            if self.__canbeEdited(_("Rename failed")):
                 song_path_new = os.path.join(config.playlist["path"], song_name_new + self.song.extension)
                 try:
                     os.rename(self.song.path, song_path_new)
@@ -553,6 +394,22 @@ class LabelEditSong(Frame):
 
 
     def _move(self):
+        def _move(playlist:str):
+            if self.__canbeEdited(_("Move failed")):
+                playlist_dst_path = config.user_config["Playlists"][playlist]["path"]
+
+                if not os.path.exists(playlist_dst_path):
+                    messagebox.showwarning(_("Move failed"), _("Destination folder does not exist"))
+                    self.playlist_handler.delPlaylist(playlist, in_tv=False)
+
+                else:
+                    try:
+                        shutil.copy2(src=self.song.path, dst=playlist_dst_path)
+                    except:
+                        messagebox.showerror(_("Move failed"), _("Unknown action not allowed"))
+
+        self._destroyLabel()
+
         tk_main_w = Widget.nametowidget(self, ".")
         coord_x = tk_main_w.winfo_x() + 250
         coord_y = tk_main_w.winfo_y() + self.__coord_y + 150
@@ -566,34 +423,16 @@ class LabelEditSong(Frame):
         for playlist in config.user_config["Playlists"]:
             if playlist != config.general["playlist"]:
                 #https://stackoverflow.com/questions/11723217/python-lambda-doesnt-remember-argument-in-for-loop
-                func_get_set_playlist = lambda playlist=playlist: self.__move(playlist)
-                self.menu.add_command(label=playlist, command=func_get_set_playlist)
+                self.menu.add_command(label=playlist, command=lambda playlist=playlist: _move(playlist))
 
         self.menu.tk_popup(coord_x, coord_y)
 
 
-    def __move(self, playlist:str):
-        if not self.__checkImpediments(_("Move failed")):
-            playlist_path = config.user_config["Playlists"][playlist]["path"]
-
-            if not os.path.exists(playlist_path):
-                messagebox.showwarning(_("Move failed"), _("Destination folder does not exist"))
-                self.playlist_handler.delPlaylist(playlist, in_tv=False)
-
-            else:
-                try:
-                    shutil.copy2(src=self.song.path, dst=playlist_path)
-                except:
-                    messagebox.showerror(_("Move failed"), _("Unknown action not allowed"))
-
-        self._destroyLabel()
-
-
     def _del(self):
-        if not self.__checkImpediments(_("Delete failed")):
+        if self.__canbeEdited(_("Delete failed")):
             try:
                 os.remove(self.song.path)
-                self.playlist - self.song
+                self.playlist.remove(self.song)
             except:
                 messagebox.showerror(_("Delete failed"), _("Unknown action not allowed"))
 

@@ -2,4 +2,4 @@
 
 #exec() function is not recommended, code can be injected
 #But being a local application without security there is no problem
-exec(open("data/images/images_base64.txt", "r").read())
+exec(open("ui/images/base64/images.txt", "r").read())

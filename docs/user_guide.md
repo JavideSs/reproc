@@ -27,7 +27,7 @@ python reproc.py
 git clone https://github.com/JavideSs/reproc.git
 cd reproc
 
-# Install pipenv if you not have ready
+# Install pipenv if you do not have it
 pip install pipenv
 
 # Install dependencies
@@ -93,7 +93,7 @@ A bar to filter or modify the playlist.
 (5) Sort the playlist by the song last modification on disk.  
 (6) Sort the playlist by the song duration on disk.*
 
-By displaying the menu we can select a playlist or add a new one to reproc.
+Displaying the menu you can select a playlist or add a new one to reproc.
 
 ![Screenshot](images/playlist_select.gif?raw=true "Playlist select")
 
@@ -110,12 +110,13 @@ These actions will have a direct consequence on the disk.
 ---
 
 ## Keyboard shortcuts
-- With the **SPACE KEY** we can continue or pause the song.
-- With the **ENTER KEY** we can reproduce the song selected in the playlist.
-- With the **RIGHT/LEFT ARROWS KEYS** we can move forward/backward respectively 5s of the current song
-- With the **UP/DOWN ARROWS KEYS** we can move through the playlist.
+- With the **SPACE KEY** you can continue or pause the song.
+- With the **ENTER KEY** you can play the selected song in the playlist.
+- With **DOUBLE CLICK** you can play the selected song in the playlist.
+- With the **RIGHT/LEFT ARROWS KEYS** you can move forward/backward respectively 5s the current song.
+- With the **UP/DOWN ARROWS KEYS** you can move through the playlist.
 
-## Win32 Features
+## Extra features
 
 ### Thumbnail toolbar
 The application in the taskbar has buttons on the thumbnail to pause, continue or play previous or next song.  

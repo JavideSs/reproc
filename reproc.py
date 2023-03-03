@@ -1,10 +1,13 @@
 from tkinter import Tk
 from tkinter.ttk import Style
-from customTk import WinFeatures
+from ui import WinFeatures
 
-from data import config, images as b64img
-from data.images.utilities import b64ToTk
+from ui import images as b64img
+from ui.images.utilities import *
+
 from program import MusicTab
+
+from data import config
 
 import gettext
 
@@ -16,16 +19,17 @@ class Reproc(Tk):
         super().__init__()
 
         self.title("Reproc")
-        self.iconphoto(True, b64ToTk(b64img.icon_reproc))
+        self.iconphoto(True, b64ToTk(b64img.icon))
         self.geometry("400x480")
 
         self.resizable(False, False)
         self.eval("tk::PlaceWindow . center")
-        self.protocol("WM_DELETE_WINDOW", self.onDelete)
+        self.protocol("WM_DELETE_WINDOW", self.onExit)
 
         self.style = Style(self)
         self.setTheme()
         self.setLanguage()
+
 
         self.tab_music = MusicTab(self)
         self.tab_music.pack()
@@ -40,21 +44,24 @@ class Reproc(Tk):
 
     #__________________________________________________
 
-    def onDelete(self):
+    def onExit(self):
         self.saveJson()
         self.win_features.releaseThumbBar()
         self.destroy()
 
 
     def saveJson(self):
-        self.tab_music.saveJson()
+        '''
+        Other saves are updated when their associated event is called
+        '''
+        config.general.update(self.tab_music.playback.getStates())
         config.save_user_config()
 
 
     def setTheme(self):
         theme = config.general["theme"]
         self.tk.call("source",
-            config.os.path.join("customTk", "ttk_themes", theme + ".tcl"))
+            config.os.path.join("ui", "ttk_themes", theme + ".tcl"))
         self.style.theme_use(theme)
         #reconfig windows
 
@@ -62,7 +69,7 @@ class Reproc(Tk):
     def setLanguage(self):
         language = gettext.translation("base",
             localedir=config.os.path.join("data", "locale"),
-            languages=[config.general["language"]])
+            languages=[config.general["lang"]])
         language.install()
         _ = language.gettext
         #reconfig windows

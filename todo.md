@@ -2,30 +2,38 @@
 
 ## Future
 
-- Windows11 support.
-- Linux support.
+- Song with long title fit in playback_control.
+
 - Choose another music playback module.
     <br>https://github.com/cheofusi/just_playback
     - Lite
     - Support change frequency dynamically
-- When playlist is modified, put it in order in menu.
-- When song is modified, put it in order in treeview.
+
+- Windows11 support.
+- Linux support.
+
+- Resizable playlist (vertical).
 
 ---
 
 ## Possible
 
-- Post it to pypi.
-- Drag and drop songs/playlists with tkdnd.
-    <br>https://github.com/petasis/tkdnd
-    <br>https://www.youtube.com/watch?v=JIy0QjwQBl0&t=14s&ab_channel=RamonWilliams
-- More Windows features.
-    <br>https://docs.microsoft.com/en-us/uwp/api/Windows.Media.MediaControl?redirectedfrom=MSDN&view=winrt-22000
+- Different languages.
+- Different themes.
+
 - Listen radio channels.
 - Stream stereo music between friends.
-- Different themes.
-- Different languages. Simple tutorial for how to use gettext (class variables are not allowed)
-- Developer guide.
+
+- More Windows features.
+    <br>https://docs.microsoft.com/en-us/uwp/api/Windows.Media.MediaControl?redirectedfrom=MSDN&view=winrt-22000
+- Drag and drop songs/playlists with tkdnd.
+    <br>https://github.com/petasis/tkdnd
+    <br>https://docs.python.org/3/library/tkinter.dnd.html
+    <br>https://www.youtube.com/watch?v=JIy0QjwQBl0&t=14s&ab_channel=RamonWilliams
+
+- Visually warn of the delay when the playlist is being loaded.
+
+- Post it to pypi.
 
 ---
 
@@ -35,3 +43,4 @@
 - Download tab.
 - Settings tab.
 - Updater.
+- Developer guide.

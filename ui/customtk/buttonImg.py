@@ -1,10 +1,9 @@
 from tkinter import Button
 
-from data.images.utilities import b64ToTk, b64ToPIL, PILToTk, brightensColorImg
+from ..images.utilities import *
+from data.data_types import *
 
 from abc import ABC, abstractmethod
-
-from data.data_types import *
 
 #==================================================
 
@@ -27,14 +26,16 @@ class TkButtonImg(ABC, Button):
 
     def _on_click(self, command:Callable):
         command()
-        if self.img_tag_now == len(self.imgs)-1:    self.img_tag_now = 0
-        else:                                       self.img_tag_now += 1
+        if self.img_tag_now == len(self.imgs)-1:
+            self.img_tag_now = 0
+        else:
+            self.img_tag_now += 1
 
 
     #Set image manually
     def set_img(self, tag:int):
+        self["image"] = self.imgs[tag]
         self.img_tag_now = tag
-        self["image"] = self.imgs[self.img_tag_now]
 
 
 #==================================================
@@ -75,8 +76,8 @@ class TkButtonImgHoverImg(TkButtonImgHover):
     def __init__(self, w, imgs:Tuple[str,...], *args, **kwargs):
         self.is_hover = False
 
-        func_brightens = lambda img: PILToTk(brightensColorImg(b64ToPIL(img), 1.5))
-        self.imgs_brightens = tuple(map(func_brightens, imgs))
+        func_lighten = lambda img: PILToTk(lightenImg(b64ToPIL(img), 1.5))
+        self.imgs_lighten = tuple(map(func_lighten, imgs))
 
         super().__init__(w, imgs=tuple(map(b64ToTk, imgs)), *args, **kwargs)
 
@@ -84,19 +85,19 @@ class TkButtonImgHoverImg(TkButtonImgHover):
     def set_img(self, tag:int):
         if self.is_hover:
             self.img_tag_now = tag
-            self["image"] = self.imgs_brightens[self.img_tag_now]
+            self["image"] = self.imgs_lighten[self.img_tag_now]
         else:
             super().set_img(tag)
 
 
     def _on_click(self, command:Callable):
         super()._on_click(command)
-        self["image"] = self.imgs_brightens[self.img_tag_now]
+        self["image"] = self.imgs_lighten[self.img_tag_now]
 
 
     def _on_hover_enter(self, _event):
         self.is_hover = True
-        self["image"] = self.imgs_brightens[self.img_tag_now]
+        self["image"] = self.imgs_lighten[self.img_tag_now]
 
     def _on_hover_leave(self, _event):
         self.is_hover = False

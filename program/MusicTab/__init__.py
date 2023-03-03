@@ -1,1 +1,1 @@
-from ._main_music_tab import MusicTab
+from ._main import MusicTab

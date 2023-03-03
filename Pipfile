@@ -4,9 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pillow = "==9.2.0"
-pygame = "==2.1.2"
+pillow = "==9.4.0"
 tinytag = "==1.8.1"
+pygame = "==2.2.0"
 
 [dev-packages]
 cx-freeze = "==6.11.1"

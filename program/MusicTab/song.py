@@ -1,10 +1,10 @@
-import os, struct
-from io import BytesIO
+from data.data_types import *
 
 from PIL import Image
 from tinytag import TinyTag
 
-from data.data_types import *
+import os, struct
+from io import BytesIO
 
 #==================================================
 
@@ -27,11 +27,19 @@ class Song():
         self.date = os.path.getmtime(self.path)
 
         self.visible = True
-        self.visible_inplaylist = False
 
     #__________________________________________________
 
-    def getPath(self) -> str:
+    def __eq__(self, other_song):
+        if self.id == other_song.id == Song.NONE_ID:
+            return True
+        if self.id == Song.NONE_ID or other_song.id == Song.NONE_ID:
+            return False
+        return self.path == other_song.path
+
+    #___
+
+    def getPath(self):
         return self.__path
 
     def setPath(self, path:str):
@@ -47,19 +55,19 @@ class Song():
 
 
     @property
-    def name(self) -> str:
+    def name(self):
         return self.__name
 
 
     @property
-    def extension(self) -> str:
+    def extension(self):
         return os.path.splitext(self.path)[-1]
 
     #___
 
     #Represents time in string format
     @staticmethod
-    def timeFormat(s_total:int) -> str:
+    def formatTime(s_total:int):
         m, s = divmod(s_total, 60)
         h, m = divmod(m, 60)
 
@@ -67,8 +75,8 @@ class Song():
         else: return "{:2d}:{:02d}".format(int(m), int(s))
 
 
-    def getTimeFormat(self) -> str:
-        return self.timeFormat(self.time)
+    def getFormattedTime(self):
+        return self.formatTime(self.time)
 
 
     def getFrequency(self) -> int:
