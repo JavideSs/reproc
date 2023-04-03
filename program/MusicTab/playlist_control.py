@@ -293,14 +293,14 @@ class PlaylistHandlerSet(Frame):
             song.path = os.path.join(playlist_new_path, song.name) + song.extension
 
 
-    def delPlaylist(self, playlist:str, in_tv:bool=True, unload:bool=False):
+    def delPlaylist(self, playlist:str, in_tv:bool=True):
         config.user_config["Playlists"].pop(playlist)
         self.menu.delete(playlist)
 
         if in_tv:
             config.general["playlist"] = ""
             self.menubtn["text"] = self.EMPTY_MENUBTN
-            self.playlist.delPlaylist(unload=unload)
+            self.playlist.delPlaylist()
 
 
 #==================================================
@@ -381,6 +381,10 @@ class TopLevelPlaylistEdit(TkPopup):
     #__________________________________________________
 
     def _renamePlaylist(self):
+        if self.playback.isSongPlayingInPlaylist():
+            messagebox.showerror(_("Rename failed"), _("Song playing in the playlist"))
+            return
+
         playlist_name_new = self.entry_playlist.get()
         if validEntryText(playlist_name_new, text_original=config.general["playlist"]):
             try:
@@ -395,11 +399,15 @@ class TopLevelPlaylistEdit(TkPopup):
 
     def _delPlaylist(self):
         self.bell()
-        state_delete = messagebox.askyesnocancel(_("Delete"), _("Do you also want to delete the playlist from the path?"))
+        state_delete = messagebox.askyesnocancel(_("Delete"), _("Do you also want to delete the playlist from the disk?"))
 
         if state_delete is None: return
 
-        self.playlist_handler_set.delPlaylist(config.general["playlist"], unload=True)
+        if state_delete and self.playback.isSongPlayingInPlaylist():
+            messagebox.showerror(_("Delete failed"), _("Song playing in the playlist"))
+            return
+
+        self.playlist_handler_set.delPlaylist(config.general["playlist"])
 
         if state_delete:
             shutil.rmtree(config.playlist["path"])

@@ -8,93 +8,100 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: program\MusicTab\playlist.py:362
-msgid "Action not allowed with a song that is playing"
-msgstr "Acción no permitida con una canción que está reproduciéndose"
+#: program\MusicTab\playlist.py:360
+msgid "Song is playing"
+msgstr "Canción reproduciéndose"
 
-#: program\MusicTab\playlist.py:365 program\MusicTab\playlist_control.py:265
+#: program\MusicTab\playlist.py:363 program\MusicTab\playlist_control.py:267
 msgid "The folder does not to exist"
 msgstr "No existe la carpeta"
 
-#: program\MusicTab\playlist.py:369
+#: program\MusicTab\playlist.py:367
 msgid "The song does not to exist"
 msgstr "No existe la canción"
 
-#: program\MusicTab\playlist.py:381 program\MusicTab\playlist.py:389
-#: program\MusicTab\playlist_control.py:391
+#: program\MusicTab\playlist.py:379 program\MusicTab\playlist.py:387
+#: program\MusicTab\playlist_control.py:385
+#: program\MusicTab\playlist_control.py:397
 msgid "Rename failed"
 msgstr "Error al renombrar"
 
-#: program\MusicTab\playlist.py:389 program\MusicTab\playlist.py:407
-#: program\MusicTab\playlist.py:435 program\MusicTab\playlist_control.py:391
-#: program\MusicTab\playlist_control.py:427
+#: program\MusicTab\playlist.py:387 program\MusicTab\playlist.py:405
+#: program\MusicTab\playlist.py:433 program\MusicTab\playlist_control.py:397
+#: program\MusicTab\playlist_control.py:437
 msgid "Unknown action not allowed"
 msgstr "Acción no permitida desconocida"
 
-#: program\MusicTab\playlist.py:396 program\MusicTab\playlist.py:400
-#: program\MusicTab\playlist.py:407
+#: program\MusicTab\playlist.py:394 program\MusicTab\playlist.py:398
+#: program\MusicTab\playlist.py:405
 msgid "Move failed"
 msgstr "Error al mover"
 
-#: program\MusicTab\playlist.py:400
+#: program\MusicTab\playlist.py:398
 msgid "Destination folder does not exist"
 msgstr "No existe la carpeta destino"
 
-#: program\MusicTab\playlist.py:430 program\MusicTab\playlist.py:435
+#: program\MusicTab\playlist.py:428 program\MusicTab\playlist.py:433
+#: program\MusicTab\playlist_control.py:407
 msgid "Delete failed"
 msgstr "Error al eliminar"
 
-#: program\MusicTab\playlist_control.py:18
+#: program\MusicTab\playlist_control.py:20
 msgid "Search song..."
 msgstr "Buscar canción..."
 
-#: program\MusicTab\playlist_control.py:190
+#: program\MusicTab\playlist_control.py:192
 msgid "Select Playlist"
 msgstr "Seleccionar Playlist"
 
-#: program\MusicTab\playlist_control.py:213
+#: program\MusicTab\playlist_control.py:215
 msgid "Import Playlist"
 msgstr "Importar Playlist"
 
-#: program\MusicTab\playlist_control.py:224
+#: program\MusicTab\playlist_control.py:226
 msgid "Select folder for new playlist"
-msgstr "Selecciona carpeta para nueva playlist"
+msgstr "Seleccionar carpeta para nueva playlist"
 
-#: program\MusicTab\playlist_control.py:265
-#: program\MusicTab\playlist_control.py:416
-#: program\MusicTab\playlist_control.py:427
+#: program\MusicTab\playlist_control.py:267
+#: program\MusicTab\playlist_control.py:426
+#: program\MusicTab\playlist_control.py:437
 msgid "Load failed"
 msgstr "Error al cargar"
 
-#: program\MusicTab\playlist_control.py:342
+#: program\MusicTab\playlist_control.py:344
 msgid "Path:"
-msgstr "Path:"
+msgstr "Ruta:"
 
-#: program\MusicTab\playlist_control.py:349
+#: program\MusicTab\playlist_control.py:351
 msgid "Size on disk:"
 msgstr "Tamaño en disco:"
 
-#: program\MusicTab\playlist_control.py:357
+#: program\MusicTab\playlist_control.py:359
 msgid "Number of songs:"
 msgstr "Número de canciones:"
 
-#: program\MusicTab\playlist_control.py:366
+#: program\MusicTab\playlist_control.py:368
 msgid "----- [Add songs] -----"
 msgstr "----- [Agregar canciones] ------"
 
-#: program\MusicTab\playlist_control.py:396
+#: program\MusicTab\playlist_control.py:385
+#: program\MusicTab\playlist_control.py:407
+msgid "Song playing in the playlist"
+msgstr "Cancion reproduciéndose en la playlist"
+
+#: program\MusicTab\playlist_control.py:402
 msgid "Delete"
 msgstr "Eliminar"
 
-#: program\MusicTab\playlist_control.py:396
-msgid "Do you also want to delete the playlist from the path?"
-msgstr "¿Quieres eliminar también la playlist del path?"
+#: program\MusicTab\playlist_control.py:402
+msgid "Do you also want to delete the playlist from the disk?"
+msgstr "¿Quieres eliminar también la playlist del disco?"
 
-#: program\MusicTab\playlist_control.py:409
+#: program\MusicTab\playlist_control.py:419
 msgid "Select"
 msgstr "Seleccionar"
 
-#: program\MusicTab\playlist_control.py:416
+#: program\MusicTab\playlist_control.py:426
 msgid "Sound format not supported "
 msgstr "Formato de sonido no soportado"
 

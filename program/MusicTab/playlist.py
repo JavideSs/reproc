@@ -153,14 +153,10 @@ class Playlist(Treeview, TPlaylist):
         self.refresh()
 
 
-    def delPlaylist(self, unload=False):
+    def delPlaylist(self):
         self.playback.songs.clear()
         self.playback.songs_previous_id.clear()
         self.delete(*self.get_children())
-
-        if unload and self.playback.isSongLoad():
-            self.playback.stop()
-            self.playback.song_playind_id = Song.NONE_ID
 
     #___
 
@@ -361,7 +357,7 @@ class LabelEditSong(Frame):
 
     def __canbeEdited(self, msg_error:str):
         if self.__isTheSongPlaying():
-            messagebox.showerror(msg_error, _("Action not allowed with a song that is playing"))
+            messagebox.showerror(msg_error, _("Song is playing"))
 
         elif not os.path.exists(config.playlist["path"]):
             messagebox.showwarning(msg_error, _("The folder does not to exist"))
@@ -408,8 +404,6 @@ class LabelEditSong(Frame):
                     except:
                         messagebox.showerror(_("Move failed"), _("Unknown action not allowed"))
 
-        self._destroyLabel()
-
         tk_main_w = Widget.nametowidget(self, ".")
         coord_x = tk_main_w.winfo_x() + 250
         coord_y = tk_main_w.winfo_y() + self.__coord_y + 150
@@ -426,6 +420,8 @@ class LabelEditSong(Frame):
                 self.menu.add_command(label=playlist, command=lambda playlist=playlist: _move(playlist))
 
         self.menu.tk_popup(coord_x, coord_y)
+
+        self._destroyLabel()
 
 
     def _del(self):

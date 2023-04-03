@@ -33,6 +33,10 @@ class Playback():
         return mixer.music.get_busy()
 
 
+    def isSongPlayingInPlaylist(self) -> bool:
+        return self.song_playing in self.songs
+
+
     def getSongById(self, song_id:int):
         for song in self.songs:
             if song.id == song_id:
@@ -122,7 +126,8 @@ class Playback():
             self.playById(self.playlist.firstItemVisible())
 
         else:
-            self.__is_load = False
+            if not self.isSongPlaying():
+                self.__is_load = False
             return False
         return True
 
@@ -143,6 +148,7 @@ class Playback():
                 mixer.music.rewind()
 
         else:
-            self.__is_load = False
+            if not self.isSongPlaying():
+                self.__is_load = False
             return False
         return True
