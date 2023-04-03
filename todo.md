@@ -2,8 +2,6 @@
 
 ## Future
 
-- Song with long title fit in playback_control.
-
 - Choose another music playback module.
     <br>https://github.com/cheofusi/just_playback
     - Lite

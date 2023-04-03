@@ -147,7 +147,7 @@ class PlaybackControl(Frame):
 class Timeline(Frame):
     INIT_TIME = Song.formatTime(0)
     INIT_NAME = "._."
-    NAME_MAX_LEN_VISIBLE = 40
+    NAME_MAX_SIZE_VISIBLE = 230
 
     def __init__(self, w, *args, **kwargs):
 
@@ -199,12 +199,21 @@ class Timeline(Frame):
     #___
 
     def setNewSong(self, song:Song):
+        #Avoid long names
+        def limit_text_size(text:str, size:int):
+            f = font.Font(font=font.nametofont("font"))
+            cond = lambda text: f.measure(text)+f.measure("...") > size
+            if cond(text):
+                while cond(text):
+                    text = text[:-1]
+                text += "..."
+            return text
+
         self.song_playing = song
         self.state_scale_time.set(0)
         self.state_txt_time1.set(Timeline.INIT_TIME)
         self.state_txt_time2.set(song.getFormattedTime())
-        self.state_txt_song.set(song.name if len(song.name) < Timeline.NAME_MAX_LEN_VISIBLE
-            else song.name[:Timeline.NAME_MAX_LEN_VISIBLE]+"...")   #Avoid long names
+        self.state_txt_song.set(limit_text_size(song.name, Timeline.NAME_MAX_SIZE_VISIBLE))
 
     #___
 
