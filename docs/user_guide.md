@@ -125,7 +125,7 @@ This feature is present in Windows systems as of Windows 7.
 ![Screenshot](images/thumbbar.jpg?raw=true "ThumbBar")
 
 ## Audio formats
-Unfortunately the pygame sld2 mixer interface for python only supports ogg for all platforms, and also mp3 for windows.  
+Unfortunately the pygame sld2 mixer interface for python only supports ogg for all platforms, and also mp3 for Windows.  
 In addition, it is not possible to change the frequency dynamically, if a song is detected with a different frequency than the previous one, the mixer is reinitialized, which means a small delay of 1s.
 
 ## Data constancy

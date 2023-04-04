@@ -24,7 +24,7 @@ class MusicTab(Frame):
         self.fnext = lambda: self._play(self.playback.playNext)
 
 
-        self.playlist = Playlist(self, height=14)
+        self.playlist = Playlist(self)
         self.playlist.grid(row=1, column=0, sticky="nsew")
 
         self.playback = Playback(self.playlist)
@@ -63,7 +63,7 @@ class MusicTab(Frame):
 
 
         #Update song every second
-        w.after(10, self._updateTimeLoop)
+        w.after(100, self._updateTimeLoop)
 
     #__________________________________________________
 

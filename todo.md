@@ -10,8 +10,6 @@
 - Windows11 support.
 - Linux support.
 
-- Resizable playlist (vertical).
-
 ---
 
 ## Possible

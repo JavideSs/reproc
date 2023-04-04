@@ -18,11 +18,12 @@ from locale import setlocale, strxfrm, LC_ALL
 #==================================================
 
 class Playlist(Treeview, TPlaylist):
-    N_ROWS = 14
     ROW_HEIGHT = 25
     COLUMN_TITLE_WIDTH = 335
     COLUMN_DURATION_WIDTH = 50
     IMGS_SIZE = (ROW_HEIGHT,ROW_HEIGHT)
+
+    n_rows = 14
 
     def __init__(self, w, *args, **kwargs):
 
@@ -31,6 +32,7 @@ class Playlist(Treeview, TPlaylist):
         super().__init__(w,
             show="tree",
             selectmode="browse",
+            height=Playlist.n_rows,
             *args, **kwargs)
 
         self["columns"] = ("#duration")
@@ -44,9 +46,12 @@ class Playlist(Treeview, TPlaylist):
         }
 
 
+        #Resize
+        w.bind("<Configure>", self._resize)
+        self._resize_timer = None
         #Stop hovering itemTV when stop hovering in TV
         self.bind("<Leave>", self._movItemLeave)
-        #Fix: Scroll does not detect the change of itemTV, we must do it manually
+        #fun: Scroll does not detect the change of itemTV, we must do it manually
         self.bind("<MouseWheel>", self._movItem)
         #Edit song when right click in itemTV
         self.bind("<Button-3>", lambda event: LabelEditSong(self, event))
@@ -58,6 +63,27 @@ class Playlist(Treeview, TPlaylist):
         setlocale(LC_ALL, "")   #Accepts special characters from all languages
 
     #__________________________________________________
+
+    def _resize(self, event:Event):
+        '''
+        fun: The window flickers, and when is maximized it resized randomly
+        '''
+        other_height = 130
+
+        Playlist.n_rows = (event.height-other_height) // Playlist.ROW_HEIGHT
+        self.configure(height=Playlist.n_rows)
+        self.update()
+
+        def resize_w():
+            tk_main_w = Widget.nametowidget(self, ".")
+            tk_main_w.geometry("400x{}".format(self.winfo_height()+130))
+            tk_main_w.update()
+
+        #The manual resizing will be cancelled for now if the user continues to resize during the waiting period
+        if self._resize_timer is not None:
+            self.after_cancel(self._resize_timer)
+        self._resize_timer = self.after(100, resize_w)
+
 
     def _movItemLeave(self, _event):
         #"self.__song_hover_id" may have no value when the TV is not completely full
@@ -74,7 +100,7 @@ class Playlist(Treeview, TPlaylist):
         #Fix down scroll
         if event.delta == -120:
             #if its not the beginning
-            if self.identify_row(Playlist.ROW_HEIGHT*(Playlist.N_ROWS +1)):
+            if self.identify_row(Playlist.ROW_HEIGHT*(Playlist.n_rows +1)):
                 event_y = event.y + Playlist.ROW_HEIGHT
             else: return
         #Fix up scroll

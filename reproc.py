@@ -20,10 +20,11 @@ class Reproc(Tk):
 
         self.title("Reproc")
         self.iconphoto(True, b64ToTk(b64img.icon))
-        self.geometry("400x480")
 
-        self.resizable(False, False)
+        self.geometry("400x480")
         self.eval("tk::PlaceWindow . center")
+        self.resizable(width=False, height=True)
+
         self.protocol("WM_DELETE_WINDOW", self.onExit)
 
         self.style = Style(self)
@@ -32,7 +33,7 @@ class Reproc(Tk):
 
 
         self.tab_music = MusicTab(self)
-        self.tab_music.pack()
+        self.tab_music.pack(fill="both", expand=True)
 
         #Functions valid only for platforms that support it
         self.win_features = WinFeatures(self)
@@ -63,7 +64,7 @@ class Reproc(Tk):
         self.tk.call("source",
             config.os.path.join("ui", "ttk_themes", theme + ".tcl"))
         self.style.theme_use(theme)
-        #reconfig windows
+        #reconfig window
 
 
     def setLanguage(self):
@@ -72,7 +73,7 @@ class Reproc(Tk):
             languages=[config.general["lang"]])
         language.install()
         _ = language.gettext
-        #reconfig windows
+        #reconfig window
 
 
 #==================================================
