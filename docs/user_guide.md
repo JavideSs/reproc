@@ -1,7 +1,7 @@
 # REPROC - Music Player
 Reproc is a free-open Local Music Player multiplaylists written in python.
 
-![Screenshot](images/reproc.jpg?raw=true "App interface")
+![reproc](images/reproc.jpg "App interface")
 
 ---
 
@@ -30,11 +30,11 @@ cd reproc
 # Install pipenv if you do not have it
 pip install pipenv
 
-# Install dependencies
-pipenv install
-
 # Start pipenv environment
 pipenv shell
+
+# Install dependencies
+pipenv install
 
 # Run reproc
 python reproc.py
@@ -45,24 +45,24 @@ python reproc.py
 # Reproc user guide
 The interface can be divided into three parts:
 
-- ### Song control
+- ### Playback control
 A simple interface with functions common to many players.
 
-![Screenshot](images/song_control.jpg?raw=true "Song control")
+![playback_control](images/playback_control.jpg "Playback control")
 
 *(1) Album cover art if there is one.  
 (2) Play songs randomly.  
-(3) play songs in loop.  
+(3) Play songs in loop.  
 (4) Play previous song.  
 (5) Play or pause song.  
 (6) Play next song.  
 (7) Control volume.  
-(8) Information about the current playback*
+(8) Information about the current playback.*
 
 - ### Playlist
-List with all the songs present in the playlist by name and duration.
+List with all songs present in the playlist by name and duration.
 
-![Screenshot](images/playlist.jpg?raw=true "Playlist")
+![playlist](images/playlist.jpg "Playlist")
 
 *(1) Play or pause song.  
 (2) Song name.  
@@ -70,12 +70,17 @@ List with all the songs present in the playlist by name and duration.
 
 It is sensitive to the mouse movement. When the mouse is passed over a song, it is colored and a button appears that can be clicked to start the song directly.
 
-![Screenshot](images/playlist_focus.gif?raw=true "Playlist focus")
+![playlist_focus](images/playlist_focus.gif "Playlist focus")
+
+The application can be resized vertically.
+Only the size of the playlist is affected, showing more or fewer songs.
+
+![playlist_resize](images/playlist_resize.gif "Playlist resize")
 
 Right clicking on a song, you can rename it, delete it or copy it to another playlist that has been imported in reproc.  
 These actions will have a direct consequence on the disk.
 
-![Screenshot](images/playlist-song_control.jpg?raw=true "Playlist-Song control")
+![playlist-song_control](images/playlist-song_control.jpg "Playlist-Song control")
 
 *(1) Rename song.  
 (2) Copy song to another playlist.  
@@ -84,7 +89,7 @@ These actions will have a direct consequence on the disk.
 - ### Playlist control
 A bar to filter or modify the playlist.
 
-![Screenshot](images/playlist_control.jpg?raw=true "Playlist control")
+![playlist_control](images/playlist_control.jpg "Playlist control")
 
 *(1) Explained below.  
 (2) Explained below.  
@@ -95,12 +100,12 @@ A bar to filter or modify the playlist.
 
 Displaying the menu you can select a playlist or add a new one to reproc.
 
-![Screenshot](images/playlist_select.gif?raw=true "Playlist select")
+![playlist_select](images/playlist_select.gif "Playlist select")
 
 Clicking on the button on the left will open a new window with some functions and information about the playlist.  
 These actions will have a direct consequence on the disk.
 
-![Screenshot](images/popup.jpg?raw=true "Popup")
+![popup](images/popup.jpg "Popup")
 
 *(1) Rename playlist.  
 (2) Delete playlist from reproc. A warning will appear asking if you also want to delete it from the disk.  
@@ -114,22 +119,24 @@ These actions will have a direct consequence on the disk.
 - With the **ENTER KEY** you can play the selected song in the playlist.
 - With **DOUBLE CLICK** you can play the selected song in the playlist.
 - With the **RIGHT/LEFT ARROWS KEYS** you can move forward/backward respectively 5s the current song.
+- With the **CTRL + RIGHT/LEFT ARROWS KEYS** you can play the next/previous song.
 - With the **UP/DOWN ARROWS KEYS** you can move through the playlist.
 
 ## Extra features
 
 ### Thumbnail toolbar
 The application in the taskbar has buttons on the thumbnail to pause, continue or play previous or next song.  
-This feature is present in Windows systems as of Windows 7. 
+This feature is present in Windows systems as of Windows 7.
 
-![Screenshot](images/thumbbar.jpg?raw=true "ThumbBar")
+![thumbbar](images/thumbbar.jpg "ThumbBar")
 
 ## Audio formats
 Unfortunately the pygame sld2 mixer interface for python only supports ogg for all platforms, and also mp3 for Windows.  
 In addition, it is not possible to change the frequency dynamically, if a song is detected with a different frequency than the previous one, the mixer is reinitialized, which means a small delay of 1s.
 
 ## Data constancy
-When closing the application the application state will be saved in "user_config.json". These are: volume, status of random and loop, selected playlist, language, theme, playlists added to reproc an their filters.
+When closing the application the application state will be saved in "user_config.json".
+These are: volume, status of random and loop, selected playlist, language, theme, playlists added to reproc an their filters.
 
 ### About "user_config.json"
 Json structure:

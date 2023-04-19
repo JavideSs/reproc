@@ -68,15 +68,16 @@ class Playlist(Treeview, TPlaylist):
         '''
         fun: The window flickers, and when is maximized it resized randomly
         '''
-        other_height = 130
 
-        Playlist.n_rows = (event.height-other_height) // Playlist.ROW_HEIGHT
+        OTHER_HEIGHT = 130  #Initially as tk_main_w.winfo_height - self.winfo_height()
+
+        Playlist.n_rows = (event.height-OTHER_HEIGHT) // Playlist.ROW_HEIGHT
         self.configure(height=Playlist.n_rows)
         self.update()
 
         def resize_w():
             tk_main_w = Widget.nametowidget(self, ".")
-            tk_main_w.geometry("400x{}".format(self.winfo_height()+130))
+            tk_main_w.geometry("400x{}".format(self.winfo_height()+OTHER_HEIGHT))
             tk_main_w.update()
 
         #The manual resizing will be cancelled for now if the user continues to resize during the waiting period

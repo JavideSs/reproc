@@ -1,7 +1,7 @@
 # REPROC - Music Player
 Reproc is a free-open Local Music Player multiplaylists written in python.
 
-![Screenshot](docs/images/reproc.jpg?raw=true "App interface")
+![reproc](docs/images/reproc.jpg "App interface")
 
 ---
 
@@ -13,11 +13,11 @@ Refer to user guide at
 
 ## Features
 - Simple interface with many functionalities.
-- Modify songs/playlists directly in the application.
 - Handling multiplaylists.
-- Keyboard shortcuts.
-- Win Thumbnail toolbar like Windows Media Player.
+- Modify songs/playlists directly in the application.
 - Data constancy when reopening the application.
+- Keyboard shortcuts.
+- Extra features.
 
 ## Dependencies
 It has not been extensively tested yet. The following dependencies have been tested while developing on Windows 10.
