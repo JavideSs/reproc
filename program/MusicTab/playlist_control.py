@@ -372,7 +372,7 @@ class TopLevelPlaylistEdit(TkPopup):
         self.btn_add_songs.grid(row=4, column=0, columnspan=3, sticky="nsew", padx=5)
 
         self.btn_open_folder = TkButtonImgHoverBg(self.w,
-            command=lambda: os.system(config.CMD_TO_OPEN_EXPLORER.format(config.playlist["path"])),
+            command=lambda: os.startfile(config.playlist["path"]),
             imgs=(PhotoImage(data=b64img.btn_openfolder),),
             bg=config.colors["BG"],
             bg_on_hover=config.colors["BTN_BG_HOVER"])

@@ -23,17 +23,13 @@ colors:Dict = user_config["Themes"][user_config["State"]["theme"]]
 #==================================================
 
 if SYSTEM == "Windows":
-    CMD_TO_OPEN_EXPLORER = "start %windir%\explorer.exe '{}'"
     SUPPORTED_SONG_FORMATS = (".mp3",".ogg")
 
 elif SYSTEM == "Linux":
-    CMD_TO_OPEN_EXPLORER = "xdg-open {}"
     SUPPORTED_SONG_FORMATS = (".ogg")
 
 elif SYSTEM == "Darwin":
-    CMD_TO_OPEN_EXPLORER = ""
     SUPPORTED_SONG_FORMATS = (".ogg")
 
 else:
-    CMD_TO_OPEN_EXPLORER = ""
     SUPPORTED_SONG_FORMATS = (".ogg")
