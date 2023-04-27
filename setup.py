@@ -28,7 +28,7 @@ class Build():
             executables = [Executable(
                 script="reproc.py",
                 target_name="Reproc",
-                icon=os.path.join("ui", "images", "file", "CD", "IconExplorer.ico"),
+                icon=os.path.join("ui", "images", "file", "icon", "IconExplorer.ico"),
                 base="Win32GUI" if sys.platform == "win32" else None
             )],
 
