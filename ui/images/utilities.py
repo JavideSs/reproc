@@ -37,7 +37,7 @@ def PILToTk(img_pil:PILImage) -> ImageTk.PhotoImage:
     return ImageTk.PhotoImage(img_pil)
 
 
-def TkSolid(size:tuple[int,int], color:str) -> ImageTk.PhotoImage:
+def TkSolid(size:Tuple[int,int], color:str) -> ImageTk.PhotoImage:
     return ImageTk.PhotoImage(Image.new(mode="RGB", size=size, color=color))
 
 

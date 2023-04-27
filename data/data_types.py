@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Literal, Any, List, Tuple, Set, Dict, Callable
+from typing import Union, Any, List, Tuple, Set, Dict, Callable
 
 from tkinter import Event, Image as TkImage
 from PIL.Image import Image as PILImage

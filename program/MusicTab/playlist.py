@@ -190,7 +190,7 @@ class Playlist(ttk.Treeview, TPlaylist):
     #___
 
     #Insert song in TV
-    def __insertSongTV(self, song:Song, pos:int|Literal["end"]="end"):
+    def __insertSongTV(self, song:Song, pos:Union[int,"end"]="end"):
         self.insert(
             "", pos,
             text="   "+song.name,
