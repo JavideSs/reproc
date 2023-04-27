@@ -1,5 +1,5 @@
-from tkinter import Frame
-from tkinter.ttk import Scrollbar
+import tkinter as tk
+from tkinter import ttk
 
 from .playback import Playback
 from .playback_control import PlaybackControl
@@ -11,7 +11,7 @@ from data.data_types import *
 
 #==================================================
 
-class MusicTab(Frame):
+class MusicTab(tk.Frame):
     def __init__(self, w, *args, **kwargs):
         self.w = w
 
@@ -30,7 +30,7 @@ class MusicTab(Frame):
         self.playback = Playback(self.playlist)
         self.playlist.setPlayback(self.playback)
 
-        self.playlist_scroll = Scrollbar(self, command=self.playlist.yview)
+        self.playlist_scroll = ttk.Scrollbar(self, command=self.playlist.yview)
         self.playlist_scroll.grid(row=1, column=1, sticky="nsw")
         self.playlist.configure(yscrollcommand=self.playlist_scroll.set)
 

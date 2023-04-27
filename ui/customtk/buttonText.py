@@ -2,8 +2,6 @@ from tkinter import Button
 
 from data.data_types import *
 
-from abc import ABC, abstractmethod
-
 #==================================================
 
 class TkButtonText(ABC, Button):

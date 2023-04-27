@@ -1,6 +1,8 @@
-import os, platform, json
-
 from data.data_types import *
+
+import os
+import platform
+import json
 
 SYSTEM = platform.system()
 SYSTEM_ARCH = platform.architecture()[0]

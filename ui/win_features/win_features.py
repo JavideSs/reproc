@@ -1,6 +1,6 @@
-from ctypes import windll
-
 from data.config import SYSTEM, SYSTEM_ARCH
+
+from ctypes import windll
 
 #==================================================
 

@@ -1,10 +1,10 @@
-from typing import List, Tuple, Set, Dict, Callable, Literal, Any
+from abc import ABC, abstractmethod
+from typing import Literal, Any, List, Tuple, Set, Dict, Callable
+
 from tkinter import Event, Image as TkImage
 from PIL.Image import Image as PILImage
 
-from abc import abstractmethod
-
-class TPlaylist():
+class TPlaylist(ABC):
     @abstractmethod
     def exists(self, id:int) -> bool: pass
     @abstractmethod

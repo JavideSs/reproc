@@ -1,6 +1,6 @@
-from .song import Song
-
 from data.data_types import *
+
+from .song import Song
 
 from pygame import mixer
 

@@ -3,7 +3,8 @@ from data.data_types import *
 from PIL import Image
 from tinytag import TinyTag
 
-import os, struct
+import os
+import struct
 from io import BytesIO
 
 #==================================================

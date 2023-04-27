@@ -1,23 +1,25 @@
-from tkinter import Widget, Frame, Menu, Entry, messagebox, PhotoImage
-from tkinter.ttk import Treeview, Separator
-from ui.customtk import TkButtonImgHoverBg
-from ui import validEntryText
+import tkinter as tk
+from tkinter import ttk
+from tkinter import messagebox
+from ui import customtk
 
 from ui import images as b64img
 from ui.images.utilities import *
-
-from .song import Song
+from ui import validEntryText
 
 from data import config
 from data.data_types import *
 
-import os, shutil
+from .song import Song
+
+import os
+import shutil
 from operator import attrgetter
 from locale import setlocale, strxfrm, LC_ALL
 
 #==================================================
 
-class Playlist(Treeview, TPlaylist):
+class Playlist(ttk.Treeview, TPlaylist):
     ROW_HEIGHT = 25
     COLUMN_TITLE_WIDTH = 335
     COLUMN_DURATION_WIDTH = 50
@@ -76,7 +78,7 @@ class Playlist(Treeview, TPlaylist):
         self.update()
 
         def resize_w():
-            tk_main_w = Widget.nametowidget(self, ".")
+            tk_main_w = tk.Widget.nametowidget(self, ".")
             tk_main_w.geometry("400x{}".format(self.winfo_height()+OTHER_HEIGHT))
             tk_main_w.update()
 
@@ -274,7 +276,7 @@ class Playlist(Treeview, TPlaylist):
 #==================================================
 
 
-class LabelEditSong(Frame):
+class LabelEditSong(tk.Frame):
     def __init__(self, playlist:Playlist, event:Event, *args, **kwargs):
 
         self.playlist = playlist
@@ -300,7 +302,7 @@ class LabelEditSong(Frame):
         self.place(x=25, y=coord[1])
 
 
-        self.entry_edit_song = Entry(self,
+        self.entry_edit_song = tk.Entry(self,
             width=45,
             background=colors[0],
             foreground=colors[1],
@@ -311,24 +313,24 @@ class LabelEditSong(Frame):
         self.entry_edit_song.icursor(5)
         self.entry_edit_song.focus()
 
-        self.separator = Separator(self, orient="vertical")
+        self.separator = ttk.Separator(self, orient="vertical")
         self.separator.grid(row=0, column=1, sticky="ns", pady=2)
 
-        self.btn_rename = TkButtonImgHoverBg(self,
+        self.btn_rename = customtk.TkButtonImgHoverBg(self,
             command=self._rename,
             imgs=(PhotoImage(data=b64img.btn_TV_edit_rename),),
             bg=colors[0],
             bg_on_hover=config.colors["BTN_BG_HOVER"])
         self.btn_rename.grid(row=0, column=2)
 
-        self.btn_move = TkButtonImgHoverBg(self,
+        self.btn_move = customtk.TkButtonImgHoverBg(self,
             command=self._move,
             imgs=(PhotoImage(data=b64img.btn_TV_edit_move),),
             bg=colors[0],
             bg_on_hover=config.colors["BTN_BG_HOVER"])
         self.btn_move.grid(row=0, column=3, padx=2)
 
-        self.btn_delete = TkButtonImgHoverBg(self,
+        self.btn_delete = customtk.TkButtonImgHoverBg(self,
             command=self._del,
             imgs=(PhotoImage(data=b64img.btn_TV_edit_delete),),
             bg=colors[0],
@@ -431,11 +433,11 @@ class LabelEditSong(Frame):
                     except:
                         messagebox.showerror(_("Move failed"), _("Unknown action not allowed"))
 
-        tk_main_w = Widget.nametowidget(self, ".")
+        tk_main_w = tk.Widget.nametowidget(self, ".")
         coord_x = tk_main_w.winfo_x() + 250
         coord_y = tk_main_w.winfo_y() + self.__coord_y + 150
 
-        self.menu = Menu(self,
+        self.menu = tk.Menu(self,
             bg=config.colors["BG"],
             activebackground=config.colors["TV_BG_HOVER"],
             activeforeground=config.colors["FG"],

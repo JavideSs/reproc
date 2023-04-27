@@ -1,21 +1,24 @@
-from tkinter import Menu, PhotoImage, messagebox, filedialog, StringVar
-from tkinter.ttk import Frame, Menubutton, Entry
-from ui.customtk import TkButtonImgHoverBg, TkButtonTextHoverFg, TkFrameInfo, TkPopup
-from ui import validEntryText
+import tkinter as tk
+from tkinter import ttk
+from tkinter import messagebox, filedialog
+from ui import customtk
 
 from ui import images as b64img
-
-from .song import Song
+from ui.images.utilities import *
+from ui import validEntryText
 
 from data import config
 from data.data_types import *
 
-import os, shutil
+from .song import Song
+
+import os
+import shutil
 from threading import Thread
 
 #==================================================
 
-class PlaylistControl(Frame):
+class PlaylistControl(ttk.Frame):
     def __init__(self, w, *args, **kwargs):
         self.EMPTY_SEARCH_TEXT = _("Search song...")    #fun: After defined _ by gettext
 
@@ -26,7 +29,7 @@ class PlaylistControl(Frame):
         super().__init__(w, *args, **kwargs)
 
 
-        self.playlist_handler_edit = TkButtonImgHoverBg(self,
+        self.playlist_handler_edit = customtk.TkButtonImgHoverBg(self,
             command=lambda: TopLevelPlaylistEdit(self) if config.general["playlist"] != "" else None,
             imgs=(PhotoImage(data=b64img.btn_configplaylist),),
             bg=config.colors["BG"],
@@ -37,10 +40,10 @@ class PlaylistControl(Frame):
         self.playlist_handler_set.grid(row=0, column=1, sticky="nsew", padx=(5,8), pady=5)
 
         #When the text is changed, triggers "self._search()"
-        self.state_entry_search = StringVar()
+        self.state_entry_search = tk.StringVar()
         self.state_entry_search.trace_add("write", self._search)
 
-        self.entry_search = Entry(self,
+        self.entry_search = ttk.Entry(self,
             width=15,
             textvariable=self.state_entry_search)
         self.entry_search.grid(row=0, column=2, sticky="nsew", pady=5)
@@ -48,14 +51,14 @@ class PlaylistControl(Frame):
         self.entry_search.bind("<FocusIn>", self._entryFocusEnter)
         self.entry_search.bind("<FocusOut>", self._entryFocusLeave)
 
-        self.btn_search = TkButtonImgHoverBg(self,
+        self.btn_search = customtk.TkButtonImgHoverBg(self,
             command=self._entryClear,
             imgs=(PhotoImage(data=b64img.btn_quitsearch),),
             bg=config.colors["BG"],
             bg_on_hover=config.colors["BTN_BG_HOVER"])
         self.btn_search.grid(row=0, column=3, sticky="nsew", padx=(0,5), pady=5)
 
-        self.btn_sorttitle = TkButtonImgHoverBg(self,
+        self.btn_sorttitle = customtk.TkButtonImgHoverBg(self,
             command=lambda: self._sortPlaylist(self.btn_sorttitle, "title"),
             imgs=(PhotoImage(data=b64img.btn_sorttitle),
                 PhotoImage(data=b64img.btn_sorttitle_up),
@@ -64,7 +67,7 @@ class PlaylistControl(Frame):
             bg_on_hover=config.colors["BTN_BG_HOVER"])
         self.btn_sorttitle.grid(row=0, column=4, sticky="nsew")
 
-        self.btn_sortdate = TkButtonImgHoverBg(self,
+        self.btn_sortdate = customtk.TkButtonImgHoverBg(self,
             command=lambda: self._sortPlaylist(self.btn_sortdate, "date"),
             imgs=(PhotoImage(data=b64img.btn_sortdate),
                 PhotoImage(data=b64img.btn_sortdate_up),
@@ -74,7 +77,7 @@ class PlaylistControl(Frame):
             change_img_on_click=True)
         self.btn_sortdate.grid(row=0, column=5, sticky="nsew")
 
-        self.btn_sorttime = TkButtonImgHoverBg(self,
+        self.btn_sorttime = customtk.TkButtonImgHoverBg(self,
             command=lambda: self._sortPlaylist(self.btn_sorttime, "time"),
             imgs=(PhotoImage(data=b64img.btn_sorttime),
                 PhotoImage(data=b64img.btn_sorttime_up),
@@ -130,7 +133,7 @@ class PlaylistControl(Frame):
 
     #___
 
-    def _sortPlaylist(self, btn:TkButtonImgHoverBg, atr:str):
+    def _sortPlaylist(self, btn:customtk.TkButtonImgHoverBg, atr:str):
         #If click on another sort btn
         if btn != self.__btn_sort_active[0]:
             self.__btn_sort_active[0].set_img(0)            #Previous btn to normal
@@ -187,7 +190,7 @@ class PlaylistControl(Frame):
 #==================================================
 
 
-class PlaylistHandlerSet(Frame):
+class PlaylistHandlerSet(ttk.Frame):
     def __init__(self, w:PlaylistControl, *args, **kwargs):
         self.EMPTY_MENUBTN:str = _("Select Playlist")    #fun: After defined _ by gettext
 
@@ -200,13 +203,13 @@ class PlaylistHandlerSet(Frame):
         super().__init__(w, *args, **kwargs)
 
 
-        self.menubtn = Menubutton(self,
+        self.menubtn = ttk.Menubutton(self,
             direction="above",
             width=13,
             text=config.general["playlist"])
         self.menubtn.pack()
 
-        self.menu = Menu(self.menubtn,
+        self.menu = tk.Menu(self.menubtn,
             bg=config.colors["BG"],
             activebackground=config.colors["TV_BG_HOVER"],
             activeforeground=config.colors["FG"],
@@ -306,7 +309,7 @@ class PlaylistHandlerSet(Frame):
 #==================================================
 
 
-class TopLevelPlaylistEdit(TkPopup):
+class TopLevelPlaylistEdit(customtk.TkPopup):
     def __init__(self, w:PlaylistControl, *args, **kwargs):
 
         self.playlist = w.playlist
@@ -322,32 +325,32 @@ class TopLevelPlaylistEdit(TkPopup):
             *args, **kwargs)
 
 
-        self.entry_playlist = Entry(self.w)
+        self.entry_playlist = ttk.Entry(self.w)
         self.entry_playlist.grid(row=0, column=0, padx=(5,0), pady=(5,0))
         self.entry_playlist.insert(0, config.general["playlist"])
 
-        self.btn_save_playlist_name = TkButtonImgHoverBg(self.w,
+        self.btn_save_playlist_name = customtk.TkButtonImgHoverBg(self.w,
             command=self._renamePlaylist,
             imgs=(PhotoImage(data=b64img.btn_TV_edit_rename),),
             bg=config.colors["BG"],
             bg_on_hover=config.colors["BTN_BG_HOVER"])
         self.btn_save_playlist_name.grid(row=0, column=1, sticky="nsew", pady=(5,0))
 
-        self.btn_delete_playlist = TkButtonImgHoverBg(self.w,
+        self.btn_delete_playlist = customtk.TkButtonImgHoverBg(self.w,
             command=self._delPlaylist,
             imgs=(PhotoImage(data=b64img.btn_TV_edit_delete),),
             bg=config.colors["BG"],
             bg_on_hover=config.colors["BTN_BG_HOVER"])
         self.btn_delete_playlist.grid(row=0, column=2, sticky="nsew", padx=(0,5), pady=(5,0))
 
-        self.frame_path = TkFrameInfo(self.w,
+        self.frame_path = customtk.TkFrameInfo(self.w,
             text=_("Path:"),
             lbl_width=5, info_width=25,
             info_bg=config.colors["BG"])
         self.frame_path.grid(row=1, column=0, columnspan=3, padx=5, pady=(10,5))
         self.frame_path.insert(config.playlist["path"])
 
-        self.frame_size = TkFrameInfo(self.w,
+        self.frame_size = customtk.TkFrameInfo(self.w,
             text=_("Size on disk:"),
             lbl_width=18, info_width=10,
             info_bg=config.colors["BG"])
@@ -355,7 +358,7 @@ class TopLevelPlaylistEdit(TkPopup):
         playlist_size_MB = sum(map(lambda song: os.path.getsize(song.path), self.playback.songs)) // (1024*1024)
         self.frame_size.insert(f"{playlist_size_MB} MB")
 
-        self.frame_num = TkFrameInfo(self.w,
+        self.frame_num = customtk.TkFrameInfo(self.w,
             text=_("Number of songs:"),
             lbl_width=18, info_width=10,
             info_bg=config.colors["BG"])
@@ -363,7 +366,7 @@ class TopLevelPlaylistEdit(TkPopup):
         playlist_len = len(self.playback.songs)
         self.frame_num.insert(str(playlist_len))
 
-        self.btn_add_songs = TkButtonTextHoverFg(self.w,
+        self.btn_add_songs = customtk.TkButtonTextHoverFg(self.w,
             command=self._addSongs,
             text=_("----- [Add songs] -----"),
             bg = config.colors["BG"],
@@ -371,7 +374,7 @@ class TopLevelPlaylistEdit(TkPopup):
             fg_on_hover="blue")
         self.btn_add_songs.grid(row=4, column=0, columnspan=3, sticky="nsew", padx=5)
 
-        self.btn_open_folder = TkButtonImgHoverBg(self.w,
+        self.btn_open_folder = customtk.TkButtonImgHoverBg(self.w,
             command=lambda: os.startfile(config.playlist["path"]),
             imgs=(PhotoImage(data=b64img.btn_openfolder),),
             bg=config.colors["BG"],

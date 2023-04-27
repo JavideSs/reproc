@@ -5,10 +5,11 @@ from ui import WinFeatures
 from ui import images as b64img
 from ui.images.utilities import *
 
-from program import MusicTab
-
 from data import config
 
+from program import MusicTab
+
+import os
 import gettext
 
 #==================================================
@@ -62,14 +63,14 @@ class Reproc(Tk):
     def setTheme(self):
         theme = config.general["theme"]
         self.tk.call("source",
-            config.os.path.join("ui", "ttk_themes", theme + ".tcl"))
+            os.path.join("ui", "ttk_themes", theme + ".tcl"))
         self.style.theme_use(theme)
         #reconfig window
 
 
     def setLanguage(self):
         language = gettext.translation("base",
-            localedir=config.os.path.join("data", "locale"),
+            localedir=os.path.join("data", "locale"),
             languages=[config.general["lang"]])
         language.install()
         _ = language.gettext

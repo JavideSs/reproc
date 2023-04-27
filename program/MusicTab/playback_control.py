@@ -1,18 +1,19 @@
-from tkinter import Scale as TkScale, PhotoImage, font, DoubleVar, StringVar
-from tkinter.ttk import Frame, Label, Separator, Scale
-from ui.customtk import TkCanvasGif, TkButtonImgHoverImg, TkButtonImgHoverNone
+import tkinter as tk
+from tkinter import ttk
+from tkinter import font
+from ui import customtk
 
 from ui import images as b64img
 from ui.images.utilities import *
 
-from .song import Song
-
 from data import config
 from data.data_types import *
 
+from .song import Song
+
 #==================================================
 
-class PlaybackControl(Frame):
+class PlaybackControl(ttk.Frame):
     def __init__(self, w, *args, **kwargs):
 
         self.playback = w.playback
@@ -27,7 +28,7 @@ class PlaybackControl(Frame):
         self.timeline = Timeline(self)
         self.timeline.grid(row=1, column=1, columnspan=9, pady=(5,10))
 
-        self.btn_random = TkButtonImgHoverNone(self,
+        self.btn_random = customtk.TkButtonImgHoverNone(self,
             command=self.playback.toggleRandom,
             imgs=(PhotoImage(data=b64img.btn_random_off),
                 PhotoImage(data=b64img.btn_random_on)),
@@ -39,7 +40,7 @@ class PlaybackControl(Frame):
             self.playback.toggleRandom()
             self.btn_random.set_img(1)
 
-        self.btn_loop = TkButtonImgHoverNone(self,
+        self.btn_loop = customtk.TkButtonImgHoverNone(self,
             command=self.playback.toggleLoop,
             imgs=(PhotoImage(data=b64img.btn_loop_off),
                 PhotoImage(data=b64img.btn_loop_on)),
@@ -51,32 +52,32 @@ class PlaybackControl(Frame):
             self.playback.toggleLoop()
             self.btn_loop.set_img(1)
 
-        self.separator1 = Separator(self, orient="vertical")
+        self.separator1 = ttk.Separator(self, orient="vertical")
         self.separator1.grid(row=0, column=3, sticky="ns", padx=(10,10), pady=(13,5))
 
-        self.btn_play_previous = TkButtonImgHoverImg(self,
+        self.btn_play_previous = customtk.TkButtonImgHoverImg(self,
             command=w.fprevious,
             imgs=(b64img.btn_playizq,),
             bg=config.colors["BG"])
         self.btn_play_previous.grid(row=0, column=4, pady=(8,0))
 
-        self.btn_playpause = TkButtonImgHoverImg(self,
+        self.btn_playpause = customtk.TkButtonImgHoverImg(self,
             command=w.fplaypause,
             imgs=(b64img.btn_play,
                 b64img.btn_playing),
             bg=config.colors["BG"])
         self.btn_playpause.grid(row=0, column=5, padx=(2,2), pady=(8,0))
 
-        self.btn_play_next = TkButtonImgHoverImg(self,
+        self.btn_play_next = customtk.TkButtonImgHoverImg(self,
             command=w.fnext,
             imgs=(b64img.btn_playder,),
             bg=config.colors["BG"])
         self.btn_play_next.grid(row=0, column=6, pady=(8,0))
 
-        self.separator2 = Separator(self, orient="vertical")
+        self.separator2 = ttk.Separator(self, orient="vertical")
         self.separator2.grid(row=0, column=7, sticky="ns", padx=(10,5), pady=(13,5))
 
-        self.btn_volume = TkButtonImgHoverImg(self,
+        self.btn_volume = customtk.TkButtonImgHoverImg(self,
             command=self._setVolumeDirect,
             imgs=(b64img.btn_volume_on,
                 b64img.btn_volume_off),
@@ -84,7 +85,7 @@ class PlaybackControl(Frame):
             change_img_on_click=True)
         self.btn_volume.grid(row=0, column=8, sticky="e", pady=(8,0))
 
-        self.scale_volume = TkScale(self,
+        self.scale_volume = tk.Scale(self,
             command=self._setVolume,
             orient="horizontal",
             width=10, length=50,
@@ -144,7 +145,7 @@ class PlaybackControl(Frame):
 #==================================================
 
 
-class Timeline(Frame):
+class Timeline(ttk.Frame):
     INIT_TIME = Song.formatTime(0)
     INIT_NAME = "._."
     NAME_MAX_SIZE_VISIBLE = 230
@@ -154,31 +155,31 @@ class Timeline(Frame):
         super().__init__(w, *args, **kwargs)
 
 
-        self.state_txt_time1 = StringVar()
+        self.state_txt_time1 = tk.StringVar()
         self.state_txt_time1.set(Timeline.INIT_TIME)
-        self.txt_time1 = Label(self,
+        self.txt_time1 = ttk.Label(self,
             textvariable=self.state_txt_time1,
             background=config.colors["BG"],
             font=font.nametofont("font_small"))
         self.txt_time1.grid(row=0, column=0, sticky="sw")
 
-        self.state_txt_song = StringVar()
+        self.state_txt_song = tk.StringVar()
         self.state_txt_song.set(Timeline.INIT_NAME)
-        self.txt_song = Label(self,
+        self.txt_song = ttk.Label(self,
             textvariable=self.state_txt_song,
             background=config.colors["BG"])
         self.txt_song.grid(row=0, column=1, pady=(0,2))
 
-        self.state_txt_time2 = StringVar()
+        self.state_txt_time2 = tk.StringVar()
         self.state_txt_time2.set(Timeline.INIT_TIME)
-        self.txt_time1 = Label(self,
+        self.txt_time1 = ttk.Label(self,
             textvariable=self.state_txt_time2,
             background=config.colors["BG"],
             font=font.nametofont("font_small"))
         self.txt_time1.grid(row=0, column=2, sticky="se")
 
-        self.state_scale_time = DoubleVar()
-        self.scale_time = Scale(self,
+        self.state_scale_time = tk.DoubleVar()
+        self.scale_time = ttk.Scale(self,
             orient="horizontal",
             length=300,
             from_=0, to=100,
@@ -237,7 +238,7 @@ class Timeline(Frame):
 #==================================================
 
 
-class Artwork(TkCanvasGif):
+class Artwork(customtk.TkCanvasGif):
     SIZE = (75,75)
 
     def __init__(self, w, *args, **kwargs):
