@@ -174,7 +174,7 @@ class Playlist(ttk.Treeview, TPlaylist):
         self.delPlaylist()
 
         for file in os.scandir(playlist_path):
-            if file.is_file and file.name.endswith(config.SUPPORTED_SONG_FORMATS):
+            if file.is_file and Song.supported_format(file.name):
                 self.playback.songs.append(Song(file.path))
 
         self.filterName(filter, refresh=False)

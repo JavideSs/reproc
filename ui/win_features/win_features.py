@@ -1,11 +1,12 @@
-from data.config import SYSTEM, SYSTEM_ARCH
+from data.data_types import *
 
+import platform
 from ctypes import windll
 
 #==================================================
 
-if SYSTEM == "Windows":
-    if SYSTEM_ARCH == "64bit":
+if platform.system() == "Windows":
+    if platform.architecture()[0] == "64bit":
         from .ThumbBar import ThumbBar_x64 as ThumbBar
     else:
         from .ThumbBar import ThumbBar_x86 as ThumbBar

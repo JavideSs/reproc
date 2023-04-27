@@ -425,7 +425,7 @@ class TopLevelPlaylistEdit(customtk.TkPopup):
         for song_path in songs_path:
             song_name = os.path.basename(song_path)
 
-            if not song_name.endswith(config.SUPPORTED_SONG_FORMATS):
+            if not Song.supported_format(song_name):
                 messagebox.showerror(_("Load failed"), _("Sound format not supported "))
                 continue
 

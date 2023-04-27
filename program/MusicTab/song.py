@@ -4,6 +4,7 @@ from PIL import Image
 from tinytag import TinyTag
 
 import os
+import platform
 import struct
 from io import BytesIO
 
@@ -63,6 +64,18 @@ class Song():
     @property
     def extension(self):
         return os.path.splitext(self.path)[-1]
+
+
+    @staticmethod
+    def supported_format(song_str:str):
+        if platform.system() == "Windows":
+            supported_formats = (".mp3", ".ogg")
+        elif platform.system() == "Linux":
+            supported_formats = ".ogg"
+        else:
+            supported_formats = ".ogg"
+
+        return song_str.endswith(supported_formats)
 
     #___
 
