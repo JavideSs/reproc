@@ -128,6 +128,12 @@ These actions will have a direct consequence on the disk.
 The application in the taskbar has buttons on the thumbnail to pause, continue or play previous or next song.  
 This feature is present in Windows systems as of Windows 7.
 
+To use the Windows API, is more practical with C++.  
+Only works for python versions compatible with the version used to compile the module.  
+Available: python3.7-32bits and python3.10-64bits.
+
+Due to problems with the python GIL, the program will crash if a playlist is being loaded (because it uses a separate thread).
+
 ![thumbbar](images/thumbbar.jpg "ThumbBar")
 
 ## Audio formats
@@ -153,4 +159,4 @@ Some theme colors can also be modified directly in this file. For a complete cus
 
 Author:  
 Javier Mellado Sánchez  
-2020-2022
+2020-2023

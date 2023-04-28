@@ -1,13 +1,12 @@
 from tkinter import Tk
 from tkinter.ttk import Style
-from ui import WinFeatures
 
 from ui import images as b64img
 from ui.images.utilities import *
 
 from data import config
 
-from program import MusicTab
+from program import MusicTab, external_events
 
 import os
 import gettext
@@ -36,19 +35,13 @@ class Reproc(Tk):
         self.tab_music = MusicTab(self)
         self.tab_music.pack(fill="both", expand=True)
 
-        #Functions valid only for platforms that support it
-        self.win_features = WinFeatures(self)
-        self.win_features.createThumbBar(
-            self.tab_music.fprevious,
-            self.tab_music.fplaypause,
-            self.tab_music.fnext,
-        )
+        self.extraevents = external_events.createExtraEvents(self)
 
     #__________________________________________________
 
     def onExit(self):
         self.saveJson()
-        self.win_features.releaseThumbBar()
+        self.extraevents.release()
         self.destroy()
 
 

@@ -100,16 +100,17 @@ class MusicTab(tk.Frame):
 
             self.playback_control.timeline.setNewSong(song_playing)
             self.playback_control.artwork.setArtWork(song_playing)
+            self.w.extraevents.newSong(song_playing)
 
         if self.playback.isSongPlaying():
             self.__is_song_playing_in_setp = True
             self.playback_control.setPlay()
-            self.w.win_features.updateThumbBar(is_song_playing=True)
+            self.w.extraevents.playSong()
 
         else:
             self.__is_song_playing_in_setp = False
             self.playback_control.setPause()
-            self.w.win_features.updateThumbBar(is_song_playing=False)
+            self.w.extraevents.stopSong()
 
 
     #Play the selected itemTV

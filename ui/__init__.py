@@ -1,4 +1,4 @@
-from .win_features.win_features import WinFeatures
+from .win_features import win_features
 
 #If there is not text or all the text there is are spaces
 #len(self.entry_search.get()) - self.entry_search.get().count(" ") == 0

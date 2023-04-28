@@ -82,16 +82,16 @@ class Build():
         pathto_data = ("data",)
         pathto_ui = ("ui",)
         pathto_locale = (*pathto_data, "locale")
-        pathto_images = (*pathto_ui, "images", "base64")
         pathto_themes = (*pathto_ui, "ttk_themes")
-        pathto_winfeatures = (*pathto_ui, "win_features")
-        pathto_winfeatures_thumbBar_images = (*pathto_winfeatures , "ThumbBar", "Images")
+        pathto_images = (*pathto_ui, "images")
+        pathto_images_b64 = (*pathto_images, "base64")
+        pathto_images_file = (*pathto_images, "file")
 
         copyTreeToBuildPath(path_build, pathto_locale)
         copyTreeToBuildPath(path_build, pathto_themes)
-        copyTreeToBuildPath(path_build, pathto_winfeatures_thumbBar_images)
+        copyTreeToBuildPath(path_build, pathto_images_file)
 
         copy2ToBuildPath(path_build, pathto_data, "user_config.json")
-        copy2ToBuildPath(path_build, pathto_images, "images.txt")
+        copy2ToBuildPath(path_build, pathto_images_b64, "images.txt")
 
 Build()

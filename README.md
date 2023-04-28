@@ -21,11 +21,11 @@ Refer to user guide at
 
 ## Dependencies
 It has not been extensively tested yet. The following dependencies have been tested while developing on Windows 10.
-- Python 3.10.2.
-- Tkinter Tcl/Tk 8.6.
-- [Pillow](https://python-pillow.org/) 9.4.0 : Imaging library for python.
-- [Tinytag](https://github.com/devsnd/tinytag) 1.8.1 : Music metadata reader.
-- [Pygame](https://www.pygame.org/) 2.2.0 : (the mixer only) sdl2 mixer interface for python.
+- Python 3.6 - 3.10.
+- Tkinter Tcl/Tk: distributed version with Python.
+- [Pillow](https://python-pillow.org/) 8.4.0 : Imaging library for python.
+- [Tinytag](https://github.com/devsnd/tinytag) 1.9.0 : Music metadata reader.
+- [Pygame](https://www.pygame.org/) 2.2.0 : (only mixer) sdl2 mixer interface for python.
 
 ---
 

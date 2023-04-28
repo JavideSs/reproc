@@ -7,7 +7,6 @@
     - Lite
     - Support change frequency dynamically
 
-- Windows11 support.
 - Linux support.
 
 ---
@@ -22,12 +21,11 @@
 
 - More Windows features.
     <br>https://docs.microsoft.com/en-us/uwp/api/Windows.Media.MediaControl?redirectedfrom=MSDN&view=winrt-22000
+  - Minimize to system tray.
 - Drag and drop songs/playlists with tkdnd.
     <br>https://github.com/petasis/tkdnd
     <br>https://docs.python.org/3/library/tkinter.dnd.html
     <br>https://www.youtube.com/watch?v=JIy0QjwQBl0&t=14s&ab_channel=RamonWilliams
-
-- Visually warn of the delay when the playlist is being loaded.
 
 - Post it to pypi.
 
