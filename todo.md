@@ -7,8 +7,6 @@
     - Lite
     - Support change frequency dynamically
 
-- Linux support.
-
 ---
 
 ## Possible

@@ -20,7 +20,9 @@ Refer to user guide at
 - Extra features.
 
 ## Dependencies
-It has not been extensively tested yet. The following dependencies have been tested while developing on Windows 10.
+It has not been extensively tested yet.
+Maybe it could run on other specifications with (or not) a few extra modifications.
+- *Systems:* Windows10, Windows11, Ubuntu22.
 - Python 3.6 - 3.10.
 - Tkinter Tcl/Tk: distributed version with Python.
 - [Pillow](https://python-pillow.org/) 8.4.0 : Imaging library for python.

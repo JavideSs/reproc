@@ -1,11 +1,13 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import font
 from tkinter import messagebox
 from ui import customtk
+from ui.utilities import *
 
+from ui import sizes
 from ui import images as b64img
 from ui.images.utilities import *
-from ui import validEntryText
 
 from data import config
 from data.data_types import *
@@ -21,8 +23,8 @@ from locale import setlocale, strxfrm, LC_ALL
 
 class Playlist(ttk.Treeview, TPlaylist):
     ROW_HEIGHT = 25
-    COLUMN_TITLE_WIDTH = 335
-    COLUMN_DURATION_WIDTH = 50
+    COLUMN_TITLE_WIDTH = sizes.MUSICTAB_PLAYLIST_COLUMNTITLE_WIDTH
+    COLUMN_DURATION_WIDTH = sizes.MUSICTAB_PLAYLIST_COLUMNDURATION_WIDTH
     IMGS_SIZE = (ROW_HEIGHT,ROW_HEIGHT)
 
     n_rows = 14
@@ -303,7 +305,7 @@ class LabelEditSong(tk.Frame):
 
 
         self.entry_edit_song = tk.Entry(self,
-            width=45,
+            width=sizes.MUSICTAB_PLAYLIST_LABELEDITSONG_ENTRYEDITSONG_WIDTH,
             background=colors[0],
             foreground=colors[1],
             borderwidth=0)
@@ -433,20 +435,27 @@ class LabelEditSong(tk.Frame):
                     except:
                         messagebox.showerror(_("Move failed"), _("Unknown action not allowed"))
 
-        tk_main_w = tk.Widget.nametowidget(self, ".")
-        coord_x = tk_main_w.winfo_x() + 250
-        coord_y = tk_main_w.winfo_y() + self.__coord_y + 150
-
-        self.menu = tk.Menu(self,
+        self.menu = tk.Menu(self.playlist,
             bg=config.colors["BG"],
             activebackground=config.colors["TV_BG_HOVER"],
             activeforeground=config.colors["FG"],
             tearoff=False)
 
+        menu_maxwidth = 0
+        f = font.Font(font=font.nametofont("font"))
+
         for playlist in config.user_config["Playlists"]:
             if playlist != config.general["playlist"]:
                 #https://stackoverflow.com/questions/11723217/python-lambda-doesnt-remember-argument-in-for-loop
                 self.menu.add_command(label=playlist, command=lambda playlist=playlist: _move(playlist))
+
+                width = f.measure(playlist)
+                if width > menu_maxwidth:
+                    menu_maxwidth = width
+
+        tk_main_w = tk.Widget.nametowidget(self, ".")
+        coord_x = tk_main_w.winfo_x() - menu_maxwidth + 320
+        coord_y = tk_main_w.winfo_y() + self.__coord_y + sizes.MUSICTAB_PLAYLIST_LABELEDITSONG_MENU_HEIGHT
 
         self.menu.tk_popup(coord_x, coord_y)
 

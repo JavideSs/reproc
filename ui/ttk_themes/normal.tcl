@@ -12,6 +12,8 @@ namespace eval ttk::theme::normal {
 
     #___
 
+    font configure TkDefaultFont -family calibri -size 10
+
     font create font -family calibri -size 10
     font create font_small -family calibri -size 8
 

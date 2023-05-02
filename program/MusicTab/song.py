@@ -71,9 +71,9 @@ class Song():
         if platform.system() == "Windows":
             supported_formats = (".mp3", ".ogg")
         elif platform.system() == "Linux":
-            supported_formats = ".ogg"
+            supported_formats = (".mp3", ".ogg")
         else:
-            supported_formats = ".ogg"
+            supported_formats = (".mp3", ".ogg")
 
         return song_str.endswith(supported_formats)
 

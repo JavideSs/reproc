@@ -1,5 +1,3 @@
-import ui
-
 from data.data_types import *
 
 from .MusicTab.song import Song
@@ -19,7 +17,9 @@ class ExtraEvents():
 
 class Windows7ExtraEvents(ExtraEvents):
     def __init__(self, w):
-        self.thumbbar = ui.win_features.ThumbBar(w,
+        from ui.win_features import ThumbBar
+
+        self.thumbbar = ThumbBar(w,
             img_path=os.path.join("ui","images","file","thumbbar","thumbbar.bmp"),
             btns=(
                 ("Previous", w.tab_music.fprevious),

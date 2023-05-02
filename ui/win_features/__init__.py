@@ -17,21 +17,21 @@ Available: python3.7-32bits and python3.10-64bits
 
 try:
     if platform.architecture()[0] == "64bit":
-        from .ThumbBar import ThumbBar_x64 as _ThumbBar
+        from .CThumbBar import ThumbBar_x64 as CThumbBar
     else:
-        from .ThumbBar import ThumbBar_Win32 as _ThumbBar
+        from .CThumbBar import ThumbBar_Win32 as CThumbBar
 
     class ThumbBar(ThumbBar):
         def __init__(self, w, img_path, btns, btnsset):
             self.hWnd = windll.user32.GetParent(w.winfo_id())
 
-            _ThumbBar.create(self.hWnd, img_path, btns, btnsset)
+            CThumbBar.create(self.hWnd, img_path, btns, btnsset)
 
         def set(self, pos, id):
-            _ThumbBar.update(pos, id)
+            CThumbBar.update(pos, id)
 
         def release(self):
-            _ThumbBar.release()
+            CThumbBar.release()
 
 except: pass
 

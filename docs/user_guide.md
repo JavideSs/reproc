@@ -137,7 +137,7 @@ Due to problems with the python GIL, the program will crash if a playlist is bei
 ![thumbbar](images/thumbbar.jpg "ThumbBar")
 
 ## Audio formats
-Unfortunately the pygame sld2 mixer interface for python only supports ogg for all platforms, and also mp3 for Windows.  
+The pygame sld2 mixer interface for python supports ogg and mp3 for all platforms.
 In addition, it is not possible to change the frequency dynamically, if a song is detected with a different frequency than the previous one, the mixer is reinitialized, which means a small delay of 1s.
 
 ## Data constancy

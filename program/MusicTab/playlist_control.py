@@ -2,10 +2,11 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox, filedialog
 from ui import customtk
+from ui.utilities import *
 
+from ui import sizes
 from ui import images as b64img
 from ui.images.utilities import *
-from ui import validEntryText
 
 from data import config
 from data.data_types import *
@@ -44,7 +45,7 @@ class PlaylistControl(ttk.Frame):
         self.state_entry_search.trace_add("write", self._search)
 
         self.entry_search = ttk.Entry(self,
-            width=15,
+            width=sizes.MUSICTAB_PLAYLISTCONTROL_ENTRYSEARCH_WIDTH,
             textvariable=self.state_entry_search)
         self.entry_search.grid(row=0, column=2, sticky="nsew", pady=5)
         self.entry_search.insert(0, self.EMPTY_SEARCH_TEXT)
@@ -205,7 +206,7 @@ class PlaylistHandlerSet(ttk.Frame):
 
         self.menubtn = ttk.Menubutton(self,
             direction="above",
-            width=13,
+            width=sizes.MUSICTAB_PLAYLISTCONTROL_PLAYLISTHANDLERSET_WIDTH,
             text=config.general["playlist"])
         self.menubtn.pack()
 
@@ -318,7 +319,7 @@ class TopLevelPlaylistEdit(customtk.TkPopup):
 
         super().__init__(w,
             coord=(100,150),
-            geometry="200x205",
+            geometry=sizes.MUSICTAB_PLAYLISTCONTROL_TOPLEVELPLAYLISTEDIT_GEOMETRY,
             title="Playlist Control Panel",
             bg_bar=config.colors["WIDGET_BG1"],
             bg=config.colors["BG"],
@@ -345,7 +346,7 @@ class TopLevelPlaylistEdit(customtk.TkPopup):
 
         self.frame_path = customtk.TkFrameInfo(self.w,
             text=_("Path:"),
-            lbl_width=5, info_width=25,
+            lbl_width=5, info_width=23,
             info_bg=config.colors["BG"])
         self.frame_path.grid(row=1, column=0, columnspan=3, padx=5, pady=(10,5))
         self.frame_path.insert(config.playlist["path"])
@@ -375,7 +376,7 @@ class TopLevelPlaylistEdit(customtk.TkPopup):
         self.btn_add_songs.grid(row=4, column=0, columnspan=3, sticky="nsew", padx=5)
 
         self.btn_open_folder = customtk.TkButtonImgHoverBg(self.w,
-            command=lambda: os.startfile(config.playlist["path"]),
+            command=lambda: open_file(config.playlist["path"]),
             imgs=(PhotoImage(data=b64img.btn_openfolder),),
             bg=config.colors["BG"],
             bg_on_hover=config.colors["BTN_BG_HOVER"])
