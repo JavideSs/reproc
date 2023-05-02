@@ -56,7 +56,7 @@ class Playlist(ttk.Treeview, TPlaylist):
         #fun: Scroll does not detect the change of itemTV, we must do it manually
         self.bind("<MouseWheel>", self._movItem)
         #Edit song when right click in itemTV
-        self.bind("<Button-3>", lambda event: LabelEditSong(self, event))
+        self.bind("<Button-3>", lambda event: LabelEditSong(self, event) if self.identify_row(event.y) != "" else None)
 
 
         self.__song_hover_id = Song.NONE_ID
@@ -353,14 +353,14 @@ class LabelEditSong(tk.Frame):
             return
 
         #New label if it is the right click
-        if event and event.num==3:
+        if event and event.num==3 and self.playlist.identify_row(event.y)!="":
             LabelEditSong(self.playlist, event)
 
         #Unbind or bind by default
         else:
             self.playlist.unbind("<Button-1>")
             self.playlist.bind("<MouseWheel>", self.playlist._movItem)
-            self.playlist.bind("<Button-3>", lambda event: LabelEditSong(self.playlist, event))
+            self.playlist.bind("<Button-3>", lambda event: LabelEditSong(self.playlist, event) if self.playlist.identify_row(event.y) != "" else None)
         self.destroy()
 
     #___
