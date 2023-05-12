@@ -318,7 +318,6 @@ class TopLevelPlaylistEdit(customtk.TkPopup):
         self.playback = w.master.playback
 
         super().__init__(w,
-            coord=(100,150),
             geometry=sizes.MUSICTAB_PLAYLISTCONTROL_TOPLEVELPLAYLISTEDIT_GEOMETRY,
             title="Playlist Control Panel",
             bg_bar=config.colors["WIDGET_BG1"],

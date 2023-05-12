@@ -6,14 +6,14 @@ from data.data_types import *
 #==================================================
 
 class TkPopup(Toplevel):
-    def __init__(self, w, coord:Tuple[int,int], geometry:str, title:str, bg_bar:str, bg:str, *args, **kwargs):
+    def __init__(self, w, geometry:Tuple[int,int], title:str, bg_bar:str, bg:str, *args, **kwargs):
 
         tk_main_w = Widget.nametowidget(w, ".")
         super().__init__(tk_main_w, *args, **kwargs)
 
-        coord_x = tk_main_w.winfo_x() + coord[0]
-        coord_y = tk_main_w.winfo_y() + coord[1]
-        self.geometry(f"{geometry}+{coord_x}+{coord_y}")
+        coord_x = tk_main_w.winfo_x() + tk_main_w.winfo_width()//2 - geometry[0]//2
+        coord_y = tk_main_w.winfo_y() + tk_main_w.winfo_height()//2 - geometry[1]//2
+        self.geometry(f"{geometry[0]}x{geometry[1]}+{coord_x}+{coord_y}")
 
         self.overrideredirect(True)
         self.attributes('-topmost', True)
