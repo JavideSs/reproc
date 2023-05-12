@@ -312,7 +312,8 @@ class LabelEditSong(tk.Frame):
         self.entry_edit_song.grid(row=0, column=0, padx=(7,7))
 
         self.entry_edit_song.insert(0, self.song.name)
-        self.entry_edit_song.icursor(5)
+        self.entry_edit_song.icursor(len(self.song.name))
+        self.entry_edit_song.xview_moveto(1)
         self.entry_edit_song.focus()
 
         self.separator = ttk.Separator(self, orient="vertical")
