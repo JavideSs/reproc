@@ -1,5 +1,5 @@
 # REPROC - Music Player
-Reproc is a free-open Local Music Player multiplaylists written in python.
+Reproc is a free-open Local Music Player multiplaylists made in python.
 
 ![reproc](docs/images/reproc.jpg "App interface")
 
@@ -24,7 +24,7 @@ It has not been extensively tested yet.
 Maybe it could run on other specifications with (or not) a few extra modifications.
 - *Systems:* Windows10, Windows11, Ubuntu22.
 - Python 3.6 - 3.10.
-- Tkinter Tcl/Tk: distributed version with Python.
+- Tkinter Tcl/Tk 8.6 distributed version with Python.
 - [Pillow](https://python-pillow.org/) 8.4.0 : Imaging library for python.
 - [Tinytag](https://github.com/devsnd/tinytag) 1.9.0 : Music metadata reader.
 - [Pygame](https://www.pygame.org/) 2.2.0 : (only mixer) sdl2 mixer interface for python.
