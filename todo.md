@@ -18,7 +18,7 @@
 - Stream stereo music between friends.
 
 - More Windows features.
-    <br>https://docs.microsoft.com/en-us/uwp/api/Windows.Media.MediaControl?redirectedfrom=MSDN&view=winrt-22000
+    <br>https://learn.microsoft.com/en-us/uwp/api/windows.media.systemmediatransportcontrols
   - Minimize to system tray.
 - Drag and drop songs/playlists with tkdnd.
     <br>https://github.com/petasis/tkdnd

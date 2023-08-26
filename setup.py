@@ -1,11 +1,18 @@
 #Build>> python setup.py build_exe
 from cx_Freeze import setup, Executable
 
-import os
-import sys
-import shutil
+import os, sys, shutil, pkgutil
 
 #==================================================
+
+modules_basics = ("collections", "encodings", "importlib")
+modules_imported = ("tkinter", "PIL", "tinytag", "pygame")
+modules_required = ("logging", "urllib", "json", "ctypes")
+modules_own = ("program", "data", "ui")
+
+python_modules_included =  modules_basics + modules_imported + modules_required + modules_own
+python_modules_excluded = {i.name for i in pkgutil.iter_modules() if i.ispkg} - set(python_modules_included)
+
 
 PATHSTART = "." + os.sep
 
@@ -24,13 +31,32 @@ def exclude_files():
                     os.makedirs(temp_path, exist_ok=True)
                     shutil.move(file_home_path, file_temp_path)
 
-
 def return_excluded_files():
     print("running-> return_excluded_files()")
 
-    shutil.copytree(PATHSTART+"temp", PATHSTART, dirs_exist_ok=True)
+    if sys.version_info < (3, 8):
+        def copytree(src, dst, symlinks=False, ignore=None):
+            if not os.path.exists(dst):
+                os.makedirs(dst)
+
+            # Copiamos los archivos
+            for i in os.listdir(src):
+                s = os.path.join(src, i)
+                d = os.path.join(dst, i)
+                if os.path.isdir(s):
+                    copytree(s, d, symlinks, ignore)
+                else:
+                    if not os.path.exists(d) or os.stat(s).st_mtime - os.stat(d).st_mtime > 1:
+                        shutil.copy2(s, d)
+
+        copytree(PATHSTART+"temp", PATHSTART)
+
+    else:
+        shutil.copytree(PATHSTART+"temp", PATHSTART, dirs_exist_ok=True)
     shutil.rmtree(PATHSTART+"temp")
 
+
+current_build_path = lambda: next((i.path for i in sorted(os.scandir("build"), key=lambda x: x.stat().st_mtime, reverse=True) if i.is_dir()), None)
 
 def include_data():
     print("running-> include_data()")
@@ -43,7 +69,7 @@ def include_data():
     def copyTreeToBuildPath(path_build, pathto):
         shutil.copytree(os.path.join(*pathto), os.path.join(path_build, *pathto))
 
-    path_build = sorted(os.scandir("build"), key=lambda x: x.stat().st_mtime)[-1].path
+    path_build = current_build_path()
 
     pathto_data = ("data",)
     pathto_ui = ("ui",)
@@ -62,38 +88,59 @@ def include_data():
     copy2ToBuildPath(path_build, pathto_data, "user_config.json")
     copy2ToBuildPath(path_build, pathto_images_b64, "images.txt")
 
+def dirty_cleaning():
+    print("running-> dirty_cleaning()")
+
+    path_build = current_build_path()
+
+    module_path_pygame = os.path.join(path_build, "lib", "pygame")
+    for i in os.scandir(module_path_pygame):
+        if i.is_dir():
+            print(i)
+            shutil.rmtree(i)
+
+
 #==================================================
 
-exclude_files()
+try:
+    exclude_files()
 
-setup(
-    name="Reproc",
-    version="1.0",
-    description="Reproc - Local Music Player",
-    long_description=open("README.md").read(),
-    long_description_content_type="text/markdown",
-    keywords="reproc local music player multiplaylists",
+    setup(
+        name= "Reproc",
+        version= "1.0",
+        description= "Reproc - Local Music Player",
+        keywords= "reproc local music player multiplaylists",
+        author= "Javier Mellado Sánchez",
+        author_email= "javimelladoo@gmail.com",
+        long_description= open("README.md").read(),
+        long_description_content_type= "text/markdown",
+        url= "https://github.com/JavideSs/reproc",
+        license= open("LICENSE").read(),
 
-    url="https://github.com/JavideSs/reproc",
+        python_requires= ">=3.6",
+        install_requires= open("requirements.txt").readlines(),
 
-    author="Javier Mellado Sánchez",
-    author_email="javimelladoo@gmail.com",
+        executables = [Executable(
+            script="reproc.py",
+            target_name="Reproc",
+            icon=os.path.join("ui", "images", "file", "icon", "IconExplorer.ico"),
+            base="Win32GUI" if sys.platform == "win32" else None
+        )],
 
-    install_requires="requirements.txt",
-    python_requires=">=3.6",
+        options = {"build_exe": {
+            "optimize": 2,
+            "include_msvcr": True,
+            "includes": python_modules_included,
+            "excludes": python_modules_excluded
+        }}
+    )
 
-    executables = [Executable(
-        script="reproc.py",
-        target_name="Reproc",
-        icon=os.path.join("ui", "images", "file", "icon", "IconExplorer.ico"),
-        base="Win32GUI" if sys.platform == "win32" else None
-    )],
+    return_excluded_files()
 
-    options = {"build_exe": {
-        "optimize": 2,
-        "include_msvcr": True
-    }}
-)
+    include_data()
 
-return_excluded_files()
-include_data()
+    dirty_cleaning()
+
+except Exception as e:
+    print("=====!!!Error!!!=====\n", e)
+    return_excluded_files()
